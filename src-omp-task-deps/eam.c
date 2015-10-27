@@ -243,7 +243,7 @@ int eamForce(SimFlat* s)
    {
     real3* a = &s->atoms->f[ii];
     real_t* b = &s->atoms->U[ii];
-    real_t* c = &pot->dfEmbed[ii]
+    real_t* c = &pot->dfEmbed[ii];
     real_t* d = &pot->rhobar[ii];
 #pragma omp task firstprivate(ii) depend(out: a, b, c, d)
     {
