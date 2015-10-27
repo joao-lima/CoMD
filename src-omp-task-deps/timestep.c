@@ -68,14 +68,16 @@ void computeForce(SimFlat* s)
 
 void advanceVelocity(SimFlat* s, int nBoxes, real_t dt)
 {
-   #pragma omp parallel for
+//   #pragma omp parallel for
    for (int iBox=0; iBox<nBoxes; iBox++)
    {
       for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
       {
+	      {
          s->atoms->p[iOff][0] += dt*s->atoms->f[iOff][0];
          s->atoms->p[iOff][1] += dt*s->atoms->f[iOff][1];
          s->atoms->p[iOff][2] += dt*s->atoms->f[iOff][2];
+	      }
       }
    }
 }

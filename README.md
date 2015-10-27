@@ -3,6 +3,14 @@ CoMD
 
 Classical molecular dynamics proxy application.
 
+Versions
+------------------------
+
+- src-serial: serial version
+- src-openmp: OpenMP with parallel for
+- src-omp-task: OpenMP with tasks
+- src-omp-task-deps: OpenMP with dependent tasks 
+
 This is CoMD version 1.1
 ------------------------
 

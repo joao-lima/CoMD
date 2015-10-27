@@ -241,7 +241,7 @@ int eamForce(SimFlat* s)
 //   #pragma omp parallel for
    for (int ii=0; ii<fsize; ii++)
    {
-#pragma omp task untied firstprivate(ii) depend(out: s->atoms->f[ii], s->atoms->U[ii], pot->dfEmbed[ii], pot->rhobar[ii])
+#pragma omp task firstprivate(ii) depend(out: s->atoms->f[ii], s->atoms->U[ii], pot->dfEmbed[ii], pot->rhobar[ii])
       zeroReal3(s->atoms->f[ii]);
       s->atoms->U[ii] = 0.;
       pot->dfEmbed[ii] = 0.;
