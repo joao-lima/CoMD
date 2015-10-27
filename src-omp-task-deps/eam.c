@@ -241,11 +241,17 @@ int eamForce(SimFlat* s)
 //   #pragma omp parallel for
    for (int ii=0; ii<fsize; ii++)
    {
-#pragma omp task firstprivate(ii) depend(out: s->atoms->f[ii], s->atoms->U[ii], pot->dfEmbed[ii], pot->rhobar[ii])
+    real3* a = &s->atoms->f[ii];
+    real_t* b = &s->atoms->U[ii];
+    real_t* c = &pot->dfEmbed[ii]
+    real_t* d = &pot->rhobar[ii];
+#pragma omp task firstprivate(ii) depend(out: a, b, c, d)
+    {
       zeroReal3(s->atoms->f[ii]);
       s->atoms->U[ii] = 0.;
       pot->dfEmbed[ii] = 0.;
       pot->rhobar[ii] = 0.;
+    }
    }
 
    int nNbrBoxes = 27;
@@ -267,7 +273,11 @@ int eamForce(SimFlat* s)
             // loop over atoms in jBox
             for (int jOff=MAXATOMS*jBox; jOff<(jBox*MAXATOMS+nJBox); jOff++)
             {
-#pragma omp task firstprivate(iOff, jOff) depend(in: s->atoms->r[iOff], s->atoms->r[jOff]) depend(inout: s->atoms->U[iOff], s->atoms->f[iOff], etot)
+//                real3* a = &s->atoms->r[iOff];
+//                real3* b = &s->atoms->r[jOff];
+//                real_t* c = &s->atoms->U[iOff];
+//                real3* d = &s->atoms->f[iOff];
+//#pragma omp task firstprivate(iOff, jOff) depend(in: s->atoms->r[iOff], s->atoms->r[jOff]) depend(inout: s->atoms->U[iOff], s->atoms->f[iOff], etot)
 	     {
                real3 dr;
                real_t r2 = 0.0;
@@ -314,7 +324,7 @@ int eamForce(SimFlat* s)
       // loop over atoms in iBox
       for (int iOff=MAXATOMS*iBox; iOff<(MAXATOMS*iBox+nIBox); iOff++)
       {
-#pragma omp task firstprivate(iOff) depend(in: pot->rhobar[iOff]) depend(out: pot->dfEmbed[iOff]) depend(inout: s->atoms->U[iOff], etot)
+//#pragma omp task firstprivate(iOff) depend(in: pot->rhobar[iOff]) depend(out: pot->dfEmbed[iOff]) depend(inout: s->atoms->U[iOff], etot)
        {
          real_t fEmbed, dfEmbed;
          interpolate(pot->f, pot->rhobar[iOff], &fEmbed, &dfEmbed);
@@ -351,7 +361,7 @@ int eamForce(SimFlat* s)
             // loop over atoms in jBox
             for (int jOff=MAXATOMS*jBox; jOff<(MAXATOMS*jBox+nJBox); jOff++)
             { 
-#pragma omp task firstprivate(iOff, jOff) depend(in: s->atoms->r[iOff], s->atoms->r[jOff], pot->dfEmbed[iOff], pot->dfEmbed[jOff]) depend(inout: s->atoms->f[iOff])
+//#pragma omp task firstprivate(iOff, jOff) depend(in: s->atoms->r[iOff], s->atoms->r[jOff], pot->dfEmbed[iOff], pot->dfEmbed[jOff]) depend(inout: s->atoms->f[iOff])
 	      {
                real_t r2 = 0.0;
                real3 dr;
