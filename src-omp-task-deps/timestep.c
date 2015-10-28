@@ -56,8 +56,6 @@ double timestep(SimFlat* s, int nSteps, real_t dt)
    }
 
    kineticEnergy(s);
-// TODO remove
-#pragma omp taskwait
 
    return s->ePotential;
 }
@@ -121,18 +119,18 @@ void kineticEnergy(SimFlat* s)
    real_t kenergy = 0.0;
    eLocal[0] = s->ePotential;
    eLocal[1] = 0;
-//   #pragma omp parallel for reduction(+:kenergy)
+   #pragma omp parallel for reduction(+:kenergy)
    for (int iBox=0; iBox<s->boxes->nLocalBoxes; iBox++)
    {
       for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
       {
           real3* _a = &s->atoms->p[iOff];
           int* _b = &s->atoms->iSpecies[iOff];
-#pragma omp task firstprivate(iOff) depend(in: _a, _b) depend(inout: kenergy)
+//#pragma omp task firstprivate(iOff) depend(in: _a, _b) depend(inout: kenergy)
         {
          int iSpecies = s->atoms->iSpecies[iOff];
          real_t invMass = 0.5/s->species[iSpecies].mass;
-#pragma omp atomic
+//#pragma omp atomic
          kenergy += ( s->atoms->p[iOff][0] * s->atoms->p[iOff][0] +
              s->atoms->p[iOff][1] * s->atoms->p[iOff][1] +
              s->atoms->p[iOff][2] * s->atoms->p[iOff][2] )*invMass;
@@ -140,7 +138,7 @@ void kineticEnergy(SimFlat* s)
       }
    }
 
-#pragma omp taskwait
+//#pragma omp taskwait
    eLocal[1] = kenergy;
 
    real_t eSum[2];
