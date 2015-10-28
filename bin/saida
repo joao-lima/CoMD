@@ -1,0 +1,491 @@
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ make
+Rebuilding dependencies...
+./generate_info_header CoMD-openmp "gcc" "-std=c99 -fopenmp -DSINGLE -g -O3  " "-lm "
+CC: /usr/bin/gcc
+Compiler version: gcc (Debian 5.2.1-22) 5.2.1 20151010
+Makefile:103: recipe for target 'depend' failed
+make[1]: *** [depend] Error 127
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c ljForce.c -o ljForce.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c haloExchange.c -o haloExchange.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c decomposition.c -o decomposition.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c linkCells.c -o linkCells.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c timestep.c -o timestep.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c performanceTimers.c -o performanceTimers.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c cmdLineParser.c -o cmdLineParser.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c mycommand.c -o mycommand.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c initAtoms.c -o initAtoms.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c yamlOutput.c -o yamlOutput.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c CoMD.c -o CoMD.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c eam.c -o eam.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c parallel.c -o parallel.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c random.c -o random.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -o ../bin/CoMD-openmp ljForce.o haloExchange.o decomposition.o linkCells.o timestep.o performanceTimers.o cmdLineParser.o mycommand.o initAtoms.o yamlOutput.o CoMD.o eam.o parallel.o random.o -lm 
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ ls
+cmdLineParser.c  CoMDTypes.h      eam.c                 haloExchange.o  linkCells.o       memUtils.h   parallel.c           random.c    timestep.o
+cmdLineParser.h  constants.h      eam.h                 initAtoms.c     ljForce.c         mycommand.c  parallel.h           random.h    yamlOutput.c
+cmdLineParser.o  decomposition.c  eam.o                 initAtoms.h     ljForce.h         mycommand.h  parallel.o           random.o    yamlOutput.h
+CoMD.c           decomposition.h  generate_info_header  initAtoms.o     ljForce.o         mycommand.o  performanceTimers.c  README.TXT  yamlOutput.o
+CoMD_info.h      decomposition.o  haloExchange.c        linkCells.c     Makefile          mytype.h     performanceTimers.h  timestep.c
+CoMD.o           Doxyfile         haloExchange.h        linkCells.h     Makefile.vanilla  OpenMP.dox   performanceTimers.o  timestep.h
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ ls -lh
+total 888K
+-rw-r--r-- 1 rafael rafael 4,8K Out 28 01:19 cmdLineParser.c
+-rw-r--r-- 1 rafael rafael 1,5K Out 28 01:19 cmdLineParser.h
+-rw-r--r-- 1 rafael rafael  21K Out 28 03:48 cmdLineParser.o
+-rw-r--r-- 1 rafael rafael  41K Out 28 01:19 CoMD.c
+-rw-r--r-- 1 rafael rafael  444 Out 28 03:48 CoMD_info.h
+-rw-r--r-- 1 rafael rafael  55K Out 28 03:48 CoMD.o
+-rw-r--r-- 1 rafael rafael 2,6K Out 28 01:19 CoMDTypes.h
+-rw-r--r-- 1 rafael rafael 1,1K Out 28 01:19 constants.h
+-rw-r--r-- 1 rafael rafael 2,3K Out 28 01:19 decomposition.c
+-rw-r--r-- 1 rafael rafael 1,1K Out 28 01:19 decomposition.h
+-rw-r--r-- 1 rafael rafael 8,3K Out 28 03:48 decomposition.o
+-rw-r--r-- 1 rafael rafael  79K Out 28 01:19 Doxyfile
+-rw-r--r-- 1 rafael rafael  29K Out 28 01:19 eam.c
+-rw-r--r-- 1 rafael rafael  560 Out 28 01:19 eam.h
+-rw-r--r-- 1 rafael rafael  69K Out 28 03:48 eam.o
+-rwxr-xr-x 1 rafael rafael 1,3K Out 28 01:19 generate_info_header
+-rw-r--r-- 1 rafael rafael  25K Out 28 01:19 haloExchange.c
+-rw-r--r-- 1 rafael rafael 4,0K Out 28 01:19 haloExchange.h
+-rw-r--r-- 1 rafael rafael  61K Out 28 03:48 haloExchange.o
+-rw-r--r-- 1 rafael rafael 7,7K Out 28 01:19 initAtoms.c
+-rw-r--r-- 1 rafael rafael 1007 Out 28 01:19 initAtoms.h
+-rw-r--r-- 1 rafael rafael  43K Out 28 03:48 initAtoms.o
+-rw-r--r-- 1 rafael rafael  16K Out 28 01:19 linkCells.c
+-rw-r--r-- 1 rafael rafael 1,9K Out 28 01:19 linkCells.h
+-rw-r--r-- 1 rafael rafael  76K Out 28 03:48 linkCells.o
+-rw-r--r-- 1 rafael rafael 7,3K Out 28 01:19 ljForce.c
+-rw-r--r-- 1 rafael rafael  189 Out 28 01:19 ljForce.h
+-rw-r--r-- 1 rafael rafael  27K Out 28 03:48 ljForce.o
+-rw-r--r-- 1 rafael rafael 2,4K Out 28 01:19 Makefile
+-rw-r--r-- 1 rafael rafael 2,4K Out 28 01:19 Makefile.vanilla
+-rw-r--r-- 1 rafael rafael  493 Out 28 01:19 memUtils.h
+-rw-r--r-- 1 rafael rafael  11K Out 28 01:19 mycommand.c
+-rw-r--r-- 1 rafael rafael 1,5K Out 28 01:19 mycommand.h
+-rw-r--r-- 1 rafael rafael  16K Out 28 03:48 mycommand.o
+-rw-r--r-- 1 rafael rafael  773 Out 28 01:19 mytype.h
+-rw-r--r-- 1 rafael rafael 4,2K Out 28 01:19 OpenMP.dox
+-rw-r--r-- 1 rafael rafael 4,3K Out 28 01:19 parallel.c
+-rw-r--r-- 1 rafael rafael 1,8K Out 28 01:19 parallel.h
+-rw-r--r-- 1 rafael rafael  16K Out 28 03:48 parallel.o
+-rw-r--r-- 1 rafael rafael  11K Out 28 01:19 performanceTimers.c
+-rw-r--r-- 1 rafael rafael 1,9K Out 28 01:19 performanceTimers.h
+-rw-r--r-- 1 rafael rafael  49K Out 28 03:48 performanceTimers.o
+-rw-r--r-- 1 rafael rafael 2,3K Out 28 01:19 random.c
+-rw-r--r-- 1 rafael rafael  460 Out 28 01:19 random.h
+-rw-r--r-- 1 rafael rafael 8,8K Out 28 03:48 random.o
+-rw-r--r-- 1 rafael rafael 1,7K Out 28 01:19 README.TXT
+-rw-r--r-- 1 rafael rafael 4,4K Out 28 01:19 timestep.c
+-rw-r--r-- 1 rafael rafael  336 Out 28 01:19 timestep.h
+-rw-r--r-- 1 rafael rafael  25K Out 28 03:48 timestep.o
+-rw-r--r-- 1 rafael rafael 3,1K Out 28 01:19 yamlOutput.c
+-rw-r--r-- 1 rafael rafael  332 Out 28 01:19 yamlOutput.h
+-rw-r--r-- 1 rafael rafael  16K Out 28 03:48 yamlOutput.o
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ cd ..
+rafael@rtrindade-dell:~/UFSM/CoMD$ ls
+bin  examples  LICENSE.md  pots  README.md  src-omp-task  src-omp-task-deps  src-openmp  src-serial
+rafael@rtrindade-dell:~/UFSM/CoMD$ cd bin/
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ ls
+CoMD-openmp
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ ./CoMD-openmp 
+Wed Oct 28 03:49:09 2015: Starting Initialization
+
+
+Mini-Application Name    : CoMD-openmp
+Mini-Application Version : 1.1
+Platform:
+  hostname: rtrindade-dell
+  kernel name: 'Linux'
+  kernel release: '4.2.0-1-amd64'
+  processor: 'unknown'
+Build:
+  CC: '/usr/bin/gcc'
+  compiler version: 'gcc (Debian 5.2.1-22) 5.2.1 20151010'
+  CFLAGS: '-std=c99 -fopenmp -DSINGLE -g -O3  '
+  LDFLAGS: '-lm '
+  using MPI: false
+  Threading: OpenMP (4 threads) 
+  Double Precision: false
+Run Date/Time: 2015-10-28, 03:49:09
+
+Command Line Parameters:
+  doeam: 0
+  potDir: pots
+  potName: Cu_u6.eam
+  potType: funcfl
+  nx: 20
+  ny: 20
+  nz: 20
+  xproc: 1
+  yproc: 1
+  zproc: 1
+  Lattice constant: -1 Angstroms
+  nSteps: 100
+  printRate: 10
+  Time step: 1 fs
+  Initial Temperature: 600 K
+  Initial Delta: 0 Angstroms
+
+Simulation data: 
+  Total atoms        : 32000
+  Min global bounds  : [   0.0000000000,   0.0000000000,   0.0000000000 ]
+  Max global bounds  : [  72.3000030518,  72.3000030518,  72.3000030518 ]
+
+Decomposition data: 
+  Processors         :      1,     1,     1
+  Local boxes        :     12,    12,    12 =     1728
+  Box size           : [   6.0250000954,   6.0250000954,   6.0250000954 ]
+  Box factor         : [   1.0410366058,   1.0410366058,   1.0410366058 ] 
+  Max Link Cell Occupancy: 32 of 64
+
+Potential data: 
+  Potential type   : Lennard-Jones
+  Species name     : Cu
+  Atomic number    : 29
+  Mass             : 63.55 amu
+  Lattice Type     : FCC
+  Lattice spacing  : 3.615 Angstroms
+  Cutoff           : 5.7875 Angstroms
+  Epsilon          : 0.167 eV
+  Sigma            : 2.315 Angstroms
+
+
+Initial energy : -1.164174795151, atom count : 32000 
+
+Wed Oct 28 03:49:09 2015: Initialization Finished
+
+Wed Oct 28 03:49:09 2015: Starting simulation
+
+#                                                                                         Performance
+#  Loop   Time(fs)       Total Energy   Potential Energy     Kinetic Energy  Temperature   (us/atom)     # Atoms
+      0       0.00    -1.164174795151    -1.241730809212     0.077556073666     600.0006     0.0000        32000
+     10      10.00    -1.164234399796    -1.231322646141     0.067088298500     519.0183     1.7041        32000
+     20      20.00    -1.164960026741    -1.207067012787     0.042106986046     325.7542     1.6964        32000
+     30      30.00    -1.165263772011    -1.185795426369     0.020531665534     158.8401     1.6258        32000
+     40      40.00    -1.165376424789    -1.182992100716     0.017615582794     136.2802     1.6243        32000
+     50      50.00    -1.165401220322    -1.193114876747     0.027713673189     214.4026     1.6317        32000
+     60      60.00    -1.165386795998    -1.201991438866     0.036604594439     283.1858     1.6268        32000
+     70      70.00    -1.165387988091    -1.204155564308     0.038767550141     299.9192     1.6157        32000
+     80      80.00    -1.165363550186    -1.202824831009     0.037461251020     289.8132     1.6419        32000
+     90      90.00    -1.165325522423    -1.203058719635     0.037733130157     291.9166     1.6065        32000
+    100     100.00    -1.165280818939    -1.206191062927     0.040910314769     316.4964     1.6127        32000
+Wed Oct 28 03:49:15 2015: Ending simulation
+
+
+
+Simulation Validation:
+  Initial energy  : -1.164174795151
+  Final energy    : -1.165280818939
+  eFinal/eInitial : 1.000950
+  Final atom count : 32000, no atoms lost
+
+
+Timings for Rank 0
+        Timer        # Calls    Avg/Call (s)   Total (s)    % Loop
+___________________________________________________________________
+total                      1       5.3174        5.3174      101.40
+loop                       1       5.2439        5.2439      100.00
+timestep                  10       0.5244        5.2435       99.99
+  position               100       0.0002        0.0205        0.39
+  velocity               200       0.0002        0.0357        0.68
+  redistribute           101       0.0029        0.2957        5.64
+    atomHalo             101       0.0012        0.1204        2.30
+  force                  101       0.0490        4.9478       94.35
+commHalo                 303       0.0001        0.0203        0.39
+commReduce                39       0.0000        0.0000        0.00
+
+Timing Statistics Across 1 Ranks:
+        Timer        Rank: Min(s)       Rank: Max(s)      Avg(s)    Stdev(s)
+_____________________________________________________________________________
+total                0:    5.3174       0:    5.3174      5.3174      0.0000
+loop                 0:    5.2439       0:    5.2439      5.2439      0.0000
+timestep             0:    5.2435       0:    5.2435      5.2435      0.0000
+  position           0:    0.0205       0:    0.0205      0.0205      0.0000
+  velocity           0:    0.0357       0:    0.0357      0.0357      0.0000
+  redistribute       0:    0.2957       0:    0.2957      0.2957      0.0000
+    atomHalo         0:    0.1204       0:    0.1204      0.1204      0.0000
+  force              0:    4.9478       0:    4.9478      4.9478      0.0000
+commHalo             0:    0.0203       0:    0.0203      0.0203      0.0000
+commReduce           0:    0.0000       0:    0.0000      0.0000      0.0000
+
+---------------------------------------------------
+ Average atom update rate:       1.64 us/atom/task
+---------------------------------------------------
+
+
+---------------------------------------------------
+ Average all atom update rate:   1.64 us/atom
+---------------------------------------------------
+
+
+---------------------------------------------------
+ Average atom rate:              0.61 atoms/us
+---------------------------------------------------
+
+Wed Oct 28 03:49:15 2015: CoMD Ending
+
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ ./CoMD-openmp > 20151028_0349.out
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ ls
+20151028_0349.out  CoMD-openmp  CoMD-openmp.2015:10:28-03:49:09.yaml  CoMD-openmp.2015:10:28-03:49:52.yaml
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ ls
+20151028_0349.out  CoMD-openmp  CoMD-openmp.2015:10:28-03:49:09.yaml  CoMD-openmp.2015:10:28-03:49:52.yaml
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ nano 20151028_0349.out 
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ su
+Senha:
+root@rtrindade-dell:/home/rafael/UFSM/CoMD/bin# checkinstall --help
+
+checkinstall 1.6.2, Copyright 2009 Felipe Eduardo Sanchez Diaz Duran
+           Este software está disponibilizado sob a GNU GPL.
+
+
+Uso: checkinstall [opções] [comando [argumentos do comando]]
+Opções:
+
+*Escolha do tipo de pacote*
+
+-t,--type=<slackware|rpm|debian> Escolha o sistema de empacotamento
+-S                               Constroí um pacote Slackware
+-R                               Constroi um pacote RPM
+-D                               Constroi um pacote Debian
+
+*Opções de instalação*
+
+--install=<yes|no>             Ativa/Desativa a instalação do pacote criado
+--fstrans=<yes|no>             Enable/disable the filesystem translation code
+
+*Opções de script*
+
+-y, --default                  Utiliza as respostas padrão em todas as questões
+--pkgname=<nome>               Configura nome
+--pkgversion=<versão>          Configura versão
+-A, --arch, --pkgarch=<arquitetura>   Configura arquitetura
+--pkgrelease=<release>         Configura release
+--pkglicense=<licença>         Configura licença
+--pkggroup=<grupo>             Configura o grupo de software
+--pkgsource=<fonte>            Configura a localização do fonte
+--pkgaltsource=<local alternativo>     Configura a localização alternativa do fonte
+--pakdir=<diretório>           Local no qual o pacote será salvo
+--maintainer=<email>      O email do mantenedor do pacote (.deb)
+--provides=<list>              Features provided by this package
+--requires=<list>              Features required by this package
+--conflicts=<list>             Packages that this package cannot be installed with (.deb)
+--replaces=<list>              Packages that this package replaces (.deb)
+--rpmflags=<flags>             Flags a serem passadas ao instalador rpm
+--rpmi                         Use the -i flag for rpm when installing a .rpm
+--rpmu                         Use the -U flag for rpm when installing a .rpm
+--dpkgflags=<flags>            Flags a serem passadas ao instalador dpkg
+--spec=<caminho>               Localização do arquivo .spec
+--nodoc                        Não inclua arquivos de documentação
+
+*Opções para visualização de informações*
+
+-d<0|1|2>                      Configura nível de depuração
+-si                            Execute um comando de instalação interativo
+--showinstall=<yes|no>         Ativa/Desativa o comando de instalação interativa
+-ss                            Execute um script Slackware de instalação interativa
+--showslack=<yes|no>           Ativa/Desativa o script Slackware para instalação interativa
+
+*Opções de configuração do pacote*
+
+--autodoinst=<yes|no>          Ativa/Desativa a criação de um script doinst.sh
+--strip=<yes|no>               Tira símbolos não-essenciais de binários ELF encontrados no pacote
+--stripso=<yes|no>             Tira símbolos não-essenciais de bibliotecas binárioa ELF (arquivos .so)
+--addso=<yes|no>               Search for any shared libs and add
+                               them to /etc/ld.so.conf
+--reset-uids=<yes|no>          Reset perms for all files to o=g, dirs to 755 and
+                               the owner/group for all dirs to root.root
+--gzman=<yes|no>               Comprime qualquer página de manual encontrada no pacote
+--docdir=<caminho>               Onde colocar os arquivos de documentação
+                               The package name+version gets automatically appended.
+                               To avoid that prefix the path with a colon (:).
+--umask=<máscara>                 Configura o valor da máscara
+--exclude=<arquivo|diretório[,...]>     Exclui os arquivos/diretórios especificados do pacote
+--include=<lista arquivos>           Força a inclusão dos arquivos da lista no pacote
+                               files/dirs listed in "listfile"
+--inspect                      Inspeciona os arquivos contidos no pacote
+--review-spec                  Revisa o arquivo spec antes de criar um .rpm
+--review-control               Revisa o arquivo de controle antes de criar um .deb
+--newslack                     Usa o novo formato de descrição do Slackware 8.1 ou superior
+                               ("--newslack" implica em "-S")
+--with-tar=/path/to/tar        Manually set the path to the tar binary
+                               in this system
+
+*Opções de limpeza*
+
+--deldoc=<yes|no>              Deleta o doc-pak após o término
+--deldesc=<yes|no>             Delete description-pak upon termination
+--delspec=<yes|no>             Deleta o arquivo de spec após o término
+--bk                           Faz cópia de segurança dos arquivos sobreescritos
+--backup=<yes|no>              Ativa/Desativa a realização de cópias de segurança
+
+*Sobre o CheckInstall*
+
+--help, -h                     Mostra esta mensagem
+--copyright                    Mostra informações sobre copyright
+--version                      Mostra informações sobre a versão
+
+root@rtrindade-dell:/home/rafael/UFSM/CoMD/bin# exit
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ ls
+20151028_0349.out  CoMD-openmp  CoMD-openmp.2015:10:28-03:49:09.yaml  CoMD-openmp.2015:10:28-03:49:52.yaml
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ cd ..
+rafael@rtrindade-dell:~/UFSM/CoMD$ cd 
+bin/               examples/          .git/              pots/              src-omp-task/      src-omp-task-deps/ src-openmp/        src-serial/
+rafael@rtrindade-dell:~/UFSM/CoMD$ cd src-omp-task
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ cd ../
+rafael@rtrindade-dell:~/UFSM/CoMD$ cd bin/
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ time ./CoMD-openmp > /dev/null 
+
+real	0m5.424s
+user	0m20.848s
+sys	0m0.056s
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ time ./CoMD-openmp > /dev/null 
+
+real	0m5.408s
+user	0m20.928s
+sys	0m0.048s
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ time ./CoMD-openmp > /dev/null 
+
+real	0m5.373s
+user	0m20.832s
+sys	0m0.060s
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ cd ..
+rafael@rtrindade-dell:~/UFSM/CoMD$ make
+make: *** Nenhum alvo indicado e nenhum arquivo make encontrado.  Pare.
+rafael@rtrindade-dell:~/UFSM/CoMD$ make clean
+make: *** No rule to make target 'clean'.  Pare.
+rafael@rtrindade-dell:~/UFSM/CoMD$ ls
+bin  examples  LICENSE.md  pots  README.md  src-omp-task  src-omp-task-deps  src-openmp  src-serial
+rafael@rtrindade-dell:~/UFSM/CoMD$ cd src-omp-task
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ make clean
+Rebuilding dependencies...
+make[2]: 'CoMD_info.h' is up to date.
+Makefile:103: recipe for target 'depend' failed
+make[1]: *** [depend] Error 127
+rm -f *.o CoMD_info.h .depend
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ make
+Rebuilding dependencies...
+./generate_info_header CoMD-openmp "gcc" "-std=c99 -fopenmp -DSINGLE -g -O3  " "-lm "
+CC: /usr/bin/gcc
+Compiler version: gcc (Debian 5.2.1-22) 5.2.1 20151010
+Makefile:103: recipe for target 'depend' failed
+make[1]: *** [depend] Error 127
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c ljForce.c -o ljForce.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c haloExchange.c -o haloExchange.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c decomposition.c -o decomposition.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c linkCells.c -o linkCells.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c timestep.c -o timestep.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c performanceTimers.c -o performanceTimers.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c cmdLineParser.c -o cmdLineParser.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c mycommand.c -o mycommand.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c initAtoms.c -o initAtoms.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c yamlOutput.c -o yamlOutput.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c CoMD.c -o CoMD.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c eam.c -o eam.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c parallel.c -o parallel.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c random.c -o random.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -o ../bin/CoMD-openmp ljForce.o haloExchange.o decomposition.o linkCells.o timestep.o performanceTimers.o cmdLineParser.o mycommand.o initAtoms.o yamlOutput.o CoMD.o eam.o parallel.o random.o -lm 
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ ls
+cmdLineParser.c  CoMDTypes.h      eam.c                 haloExchange.o  linkCells.o       memUtils.h   parallel.c           random.c    timestep.o
+cmdLineParser.h  constants.h      eam.h                 initAtoms.c     ljForce.c         mycommand.c  parallel.h           random.h    yamlOutput.c
+cmdLineParser.o  decomposition.c  eam.o                 initAtoms.h     ljForce.h         mycommand.h  parallel.o           random.o    yamlOutput.h
+CoMD.c           decomposition.h  generate_info_header  initAtoms.o     ljForce.o         mycommand.o  performanceTimers.c  README.TXT  yamlOutput.o
+CoMD_info.h      decomposition.o  haloExchange.c        linkCells.c     Makefile          mytype.h     performanceTimers.h  timestep.c
+CoMD.o           Doxyfile         haloExchange.h        linkCells.h     Makefile.vanilla  OpenMP.dox   performanceTimers.o  timestep.h
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ rm *.o
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ ls
+cmdLineParser.c  CoMDTypes.h      Doxyfile              haloExchange.c  linkCells.c  Makefile          mycommand.h  parallel.h           random.h    yamlOutput.c
+cmdLineParser.h  constants.h      eam.c                 haloExchange.h  linkCells.h  Makefile.vanilla  mytype.h     performanceTimers.c  README.TXT  yamlOutput.h
+CoMD.c           decomposition.c  eam.h                 initAtoms.c     ljForce.c    memUtils.h        OpenMP.dox   performanceTimers.h  timestep.c
+CoMD_info.h      decomposition.h  generate_info_header  initAtoms.h     ljForce.h    mycommand.c       parallel.c   random.c             timestep.h
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ make
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c ljForce.c -o ljForce.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c haloExchange.c -o haloExchange.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c decomposition.c -o decomposition.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c linkCells.c -o linkCells.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c timestep.c -o timestep.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c performanceTimers.c -o performanceTimers.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c cmdLineParser.c -o cmdLineParser.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c mycommand.c -o mycommand.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c initAtoms.c -o initAtoms.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c yamlOutput.c -o yamlOutput.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c CoMD.c -o CoMD.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c eam.c -o eam.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c parallel.c -o parallel.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c random.c -o random.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -o ../bin/CoMD-openmp ljForce.o haloExchange.o decomposition.o linkCells.o timestep.o performanceTimers.o cmdLineParser.o mycommand.o initAtoms.o yamlOutput.o CoMD.o eam.o parallel.o random.o -lm 
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ cd ../bin/
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ çs
+bash: çs: comando não encontrado
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ ls
+20151028_0349.out  CoMD-openmp.2015:10:28-03:49:09.yaml  CoMD-openmp.2015:10:28-04:17:23.yaml  CoMD-openmp.2015:10:28-04:17:41.yaml
+CoMD-openmp        CoMD-openmp.2015:10:28-03:49:52.yaml  CoMD-openmp.2015:10:28-04:17:33.yaml
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ time ./CoMD-openmp > /dev/null 
+
+real	0m5.340s
+user	0m20.740s
+sys	0m0.044s
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ time ./CoMD-openmp > /dev/null 
+
+real	0m5.397s
+user	0m20.956s
+sys	0m0.040s
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ time ./CoMD-openmp > /dev/null 
+
+real	0m5.373s
+user	0m20.936s
+sys	0m0.028s
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ cd ../src-
+src-omp-task/      src-omp-task-deps/ src-openmp/        src-serial/        
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ cd ../src-omp-task
+src-omp-task/      src-omp-task-deps/ 
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ cd ../src-omp-task
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ ls
+cmdLineParser.c  CoMDTypes.h      eam.c                 haloExchange.o  linkCells.o       memUtils.h   parallel.c           random.c    timestep.o
+cmdLineParser.h  constants.h      eam.h                 initAtoms.c     ljForce.c         mycommand.c  parallel.h           random.h    yamlOutput.c
+cmdLineParser.o  decomposition.c  eam.o                 initAtoms.h     ljForce.h         mycommand.h  parallel.o           random.o    yamlOutput.h
+CoMD.c           decomposition.h  generate_info_header  initAtoms.o     ljForce.o         mycommand.o  performanceTimers.c  README.TXT  yamlOutput.o
+CoMD_info.h      decomposition.o  haloExchange.c        linkCells.c     Makefile          mytype.h     performanceTimers.h  timestep.c
+CoMD.o           Doxyfile         haloExchange.h        linkCells.h     Makefile.vanilla  OpenMP.dox   performanceTimers.o  timestep.h
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ rm *.o
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ make
+Rebuilding dependencies...
+make[2]: 'CoMD_info.h' is up to date.
+Makefile:103: recipe for target 'depend' failed
+make[1]: *** [depend] Error 127
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c ljForce.c -o ljForce.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c haloExchange.c -o haloExchange.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c decomposition.c -o decomposition.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c linkCells.c -o linkCells.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c timestep.c -o timestep.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c performanceTimers.c -o performanceTimers.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c cmdLineParser.c -o cmdLineParser.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c mycommand.c -o mycommand.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c initAtoms.c -o initAtoms.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c yamlOutput.c -o yamlOutput.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c CoMD.c -o CoMD.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c eam.c -o eam.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c parallel.c -o parallel.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -c random.c -o random.o
+gcc -std=c99 -fopenmp -DSINGLE -g -O3   -o ../bin/CoMD-openmp ljForce.o haloExchange.o decomposition.o linkCells.o timestep.o performanceTimers.o cmdLineParser.o mycommand.o initAtoms.o yamlOutput.o CoMD.o eam.o parallel.o random.o -lm 
+rafael@rtrindade-dell:~/UFSM/CoMD/src-omp-task$ cd ../bin/
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ time ./CoMD-openmp > /dev/null 
+
+real	0m5.254s
+user	0m20.748s
+sys	0m0.020s
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ time ./CoMD-openmp > /dev/null 
+
+real	0m5.250s
+user	0m20.676s
+sys	0m0.068s
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ time ./CoMD-openmp > /dev/null 
+
+real	0m5.285s
+user	0m20.764s
+sys	0m0.032s
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ ls
+20151028_0349.out                     CoMD-openmp.2015:10:28-04:17:23.yaml  CoMD-openmp.2015:10:28-04:19:55.yaml  CoMD-openmp.2015:10:28-04:52:01.yaml
+CoMD-openmp                           CoMD-openmp.2015:10:28-04:17:33.yaml  CoMD-openmp.2015:10:28-04:20:02.yaml
+CoMD-openmp.2015:10:28-03:49:09.yaml  CoMD-openmp.2015:10:28-04:17:41.yaml  CoMD-openmp.2015:10:28-04:51:46.yaml
+CoMD-openmp.2015:10:28-03:49:52.yaml  CoMD-openmp.2015:10:28-04:19:47.yaml  CoMD-openmp.2015:10:28-04:51:54.yaml
+rafael@rtrindade-dell:~/UFSM/CoMD/bin$ 
