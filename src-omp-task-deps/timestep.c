@@ -75,6 +75,9 @@ void advanceVelocity(SimFlat* s, int nBoxes, real_t dt)
    {
       for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
       {
+          real3* _a = &s->atoms->f[iOff];
+          real3* _b = &s->atoms->p[iOff];
+#pragma omp task firstprivate(iOff) depend(in: _a) depend(out: _b)
 	      {
          s->atoms->p[iOff][0] += dt*s->atoms->f[iOff][0];
          s->atoms->p[iOff][1] += dt*s->atoms->f[iOff][1];
@@ -82,6 +85,8 @@ void advanceVelocity(SimFlat* s, int nBoxes, real_t dt)
 	      }
       }
    }
+// TODO remove
+#pragma omp taskwait
 }
 
 void advancePosition(SimFlat* s, int nBoxes, real_t dt)
