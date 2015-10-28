@@ -396,7 +396,11 @@ int eamForce(SimFlat* s)
       } // loop over neighbor boxes
    } // loop over local boxes
 
+#pragma omp task depend(in: etot)
    s->ePotential = (real_t) etot;
+
+// TODO remove
+#pragma omp taskwait
 
    return 0;
 }

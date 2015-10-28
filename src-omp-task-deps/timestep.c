@@ -56,6 +56,8 @@ double timestep(SimFlat* s, int nSteps, real_t dt)
    }
 
    kineticEnergy(s);
+// TODO remove
+#pragma omp taskwait
 
    return s->ePotential;
 }
