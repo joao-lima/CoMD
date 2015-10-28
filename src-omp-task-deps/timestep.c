@@ -62,6 +62,8 @@ double timestep(SimFlat* s, int nSteps, real_t dt)
 
 void computeForce(SimFlat* s)
 {
+#pragma omp parallel
+#pragma omp single
    s->pot->force(s);
 }
 
@@ -69,6 +71,9 @@ void computeForce(SimFlat* s)
 void advanceVelocity(SimFlat* s, int nBoxes, real_t dt)
 {
 //   #pragma omp parallel for
+#pragma omp parallel
+#pragma omp single
+{
    for (int iBox=0; iBox<nBoxes; iBox++)
    {
       for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
@@ -85,11 +90,15 @@ void advanceVelocity(SimFlat* s, int nBoxes, real_t dt)
    }
 // TODO remove
 #pragma omp taskwait
+} // parallel
 }
 
 void advancePosition(SimFlat* s, int nBoxes, real_t dt)
 {
 //   #pragma omp parallel for
+#pragma omp parallel
+#pragma omp single
+{
    for (int iBox=0; iBox<nBoxes; iBox++)
    {
       for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
@@ -109,6 +118,7 @@ void advancePosition(SimFlat* s, int nBoxes, real_t dt)
    }
 // TODO remove
 #pragma omp taskwait
+} // parallel
 }
 
 /// Calculates total kinetic and potential energy across all tasks.  The
@@ -124,8 +134,8 @@ void kineticEnergy(SimFlat* s)
    {
       for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
       {
-          real3* _a = &s->atoms->p[iOff];
-          int* _b = &s->atoms->iSpecies[iOff];
+//          real3* _a = &s->atoms->p[iOff];
+//          int* _b = &s->atoms->iSpecies[iOff];
 //#pragma omp task firstprivate(iOff) depend(in: _a, _b) depend(inout: kenergy)
         {
          int iSpecies = s->atoms->iSpecies[iOff];

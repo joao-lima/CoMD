@@ -112,8 +112,8 @@ int main(int argc, char** argv)
    const int printRate = sim->printRate;
    int iStep = 0;
    profileStart(loopTimer);
-#pragma omp parallel
-#pragma omp single
+//#pragma omp parallel
+//#pragma omp single
 {
    for (; iStep<nSteps;)
    {
