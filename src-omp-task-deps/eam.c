@@ -235,9 +235,7 @@ int eamForce(SimFlat* s)
 
    // zero forces / energy / rho /rhoprime
    int fsize = s->boxes->nTotalBoxes*MAXATOMS;
-#pragma omp parallel
-#pragma omp single
-{
+
 //   #pragma omp parallel for
    for (int ii=0; ii<fsize; ii++)
    {
@@ -397,8 +395,6 @@ int eamForce(SimFlat* s)
          } // loop over atoms in iBox
       } // loop over neighbor boxes
    } // loop over local boxes
-
-} // end parallel
 
    s->ePotential = (real_t) etot;
 

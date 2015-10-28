@@ -120,7 +120,7 @@ void setVcm(SimFlat* s, real_t newVcm[3])
    vShift[1] = (newVcm[1] - oldVcm[1]);
    vShift[2] = (newVcm[2] - oldVcm[2]);
 
-   #pragma omp parallel for
+//   #pragma omp parallel for
    for (int iBox=0; iBox<s->boxes->nLocalBoxes; ++iBox)
    {
       for (int iOff=MAXATOMS*iBox, ii=0; ii<s->boxes->nAtoms[iBox]; ++ii, ++iOff)
@@ -148,7 +148,7 @@ void setVcm(SimFlat* s, real_t newVcm[3])
 void setTemperature(SimFlat* s, real_t temperature)
 {
    // set initial velocities for the distribution
-   #pragma omp parallel for
+//   #pragma omp parallel for
    for (int iBox=0; iBox<s->boxes->nLocalBoxes; ++iBox)
    {
       for (int iOff=MAXATOMS*iBox, ii=0; ii<s->boxes->nAtoms[iBox]; ++ii, ++iOff)
@@ -171,7 +171,7 @@ void setTemperature(SimFlat* s, real_t temperature)
    real_t temp = (s->eKinetic/s->atoms->nGlobal)/kB_eV/1.5;
    // scale the velocities to achieve the target temperature
    real_t scaleFactor = sqrt(temperature/temp);
-   #pragma omp parallel for
+//   #pragma omp parallel for
    for (int iBox=0; iBox<s->boxes->nLocalBoxes; ++iBox)
    {
       for (int iOff=MAXATOMS*iBox, ii=0; ii<s->boxes->nAtoms[iBox]; ++ii, ++iOff)
@@ -191,7 +191,7 @@ void setTemperature(SimFlat* s, real_t temperature)
 /// \param [in] delta The maximum displacement (along each axis).
 void randomDisplacements(SimFlat* s, real_t delta)
 {
-   #pragma omp parallel for
+//   #pragma omp parallel for
    for (int iBox=0; iBox<s->boxes->nLocalBoxes; ++iBox)
    {
       for (int iOff=MAXATOMS*iBox, ii=0; ii<s->boxes->nAtoms[iBox]; ++ii, ++iOff)
@@ -215,7 +215,7 @@ void computeVcm(SimFlat* s, real_t vcm[3])
    real_t v3 = 0.0;
 
    // sum the momenta and particle masses 
-   #pragma omp parallel for reduction(+:v0) reduction(+:v1) reduction(+:v2) reduction(+:v3)
+//   #pragma omp parallel for reduction(+:v0) reduction(+:v1) reduction(+:v2) reduction(+:v3)
    for (int iBox=0; iBox<s->boxes->nLocalBoxes; ++iBox)
    {
       for (int iOff=MAXATOMS*iBox, ii=0; ii<s->boxes->nAtoms[iBox]; ++ii, ++iOff)

@@ -84,7 +84,7 @@ void advanceVelocity(SimFlat* s, int nBoxes, real_t dt)
 
 void advancePosition(SimFlat* s, int nBoxes, real_t dt)
 {
-   #pragma omp parallel for
+//   #pragma omp parallel for
    for (int iBox=0; iBox<nBoxes; iBox++)
    {
       for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
@@ -106,7 +106,7 @@ void kineticEnergy(SimFlat* s)
    real_t kenergy = 0.0;
    eLocal[0] = s->ePotential;
    eLocal[1] = 0;
-   #pragma omp parallel for reduction(+:kenergy)
+//   #pragma omp parallel for reduction(+:kenergy)
    for (int iBox=0; iBox<s->boxes->nLocalBoxes; iBox++)
    {
       for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
@@ -151,7 +151,7 @@ void redistributeAtoms(SimFlat* sim)
    haloExchange(sim->atomExchange, sim);
    stopTimer(atomHaloTimer);
 
-   #pragma omp parallel for
+//   #pragma omp parallel for
    for (int ii=0; ii<sim->boxes->nTotalBoxes; ++ii)
       sortAtomsInCell(sim->atoms, sim->boxes, ii);
 }
