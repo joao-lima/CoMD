@@ -96,12 +96,13 @@ void advancePosition(SimFlat* s, int nBoxes, real_t dt)
    {
       for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
       {
-         int iSpecies = s->atoms->iSpecies[iOff];
-         real_t invMass = 1.0/s->species[iSpecies].mass;
           real3* _a = &s->atoms->p[iOff];
           real3* _b = &s->atoms->r[iOff];
-#pragma omp task firstprivate(iOff) depend(in: _a) depend(inout: _b)
+          int* _c = &s->atoms->iSpecies[iOff];
+#pragma omp task firstprivate(iOff) depend(in: _a, _c) depend(inout: _b)
           {
+         int iSpecies = s->atoms->iSpecies[iOff];
+         real_t invMass = 1.0/s->species[iSpecies].mass;
          s->atoms->r[iOff][0] += dt*s->atoms->p[iOff][0]*invMass;
          s->atoms->r[iOff][1] += dt*s->atoms->p[iOff][1]*invMass;
          s->atoms->r[iOff][2] += dt*s->atoms->p[iOff][2]*invMass;
