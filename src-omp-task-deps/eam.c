@@ -273,7 +273,7 @@ int eamForce(SimFlat* s)
                 real3* _b = &s->atoms->r[jOff];
                 real_t* _c = &s->atoms->U[iOff];
                 real3* _d = &s->atoms->f[iOff];
-#pragma omp task firstprivate(iOff, jOff) depend(in: _a, _b) depend(inout: _c, _d, etot)
+#pragma omp task firstprivate(iOff, jOff) shared(etot) depend(in: _a, _b) depend(inout: _c, _d, etot)
 	     {
                real3 dr;
                real_t r2 = 0.0;
@@ -323,7 +323,7 @@ int eamForce(SimFlat* s)
         real_t* _b = &s->atoms->U[iOff];
         real_t* _c = &pot->dfEmbed[iOff];
         real_t* _d = &pot->rhobar[iOff];
-#pragma omp task firstprivate(iOff) depend(in: _d) depend(out: _c) depend(inout: _b, etot)
+#pragma omp task firstprivate(iOff) shared(etot) depend(in: _d) depend(out: _c) depend(inout: _b, etot)
        {
          real_t fEmbed, dfEmbed;
          interpolate(pot->f, pot->rhobar[iOff], &fEmbed, &dfEmbed);
