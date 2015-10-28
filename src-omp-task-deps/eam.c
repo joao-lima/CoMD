@@ -299,6 +299,7 @@ int eamForce(SimFlat* s)
 
                   // Calculate energy contribution
                   s->atoms->U[iOff] += 0.5*phiTmp;
+#pragma omp atomic
                   etot += 0.5*phiTmp;
 
                   // accumulate rhobar for each atom
@@ -328,6 +329,7 @@ int eamForce(SimFlat* s)
          interpolate(pot->f, pot->rhobar[iOff], &fEmbed, &dfEmbed);
          pot->dfEmbed[iOff] = dfEmbed; // save derivative for halo exchange
          s->atoms->U[iOff] += fEmbed;
+#pragma omp atomic
          etot += fEmbed;
        }
       }

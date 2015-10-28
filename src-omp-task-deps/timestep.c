@@ -77,7 +77,7 @@ void advanceVelocity(SimFlat* s, int nBoxes, real_t dt)
       {
           real3* _a = &s->atoms->f[iOff];
           real3* _b = &s->atoms->p[iOff];
-#pragma omp task firstprivate(iOff) depend(in: _a) depend(out: _b)
+#pragma omp task firstprivate(iOff) depend(in: _a) depend(inout: _b)
 	      {
          s->atoms->p[iOff][0] += dt*s->atoms->f[iOff][0];
          s->atoms->p[iOff][1] += dt*s->atoms->f[iOff][1];
@@ -98,11 +98,18 @@ void advancePosition(SimFlat* s, int nBoxes, real_t dt)
       {
          int iSpecies = s->atoms->iSpecies[iOff];
          real_t invMass = 1.0/s->species[iSpecies].mass;
+          real3* _a = &s->atoms->p[iOff];
+          real3* _b = &s->atoms->r[iOff];
+#pragma omp task firstprivate(iOff) depend(in: _a) depend(inout: _b)
+          {
          s->atoms->r[iOff][0] += dt*s->atoms->p[iOff][0]*invMass;
          s->atoms->r[iOff][1] += dt*s->atoms->p[iOff][1]*invMass;
          s->atoms->r[iOff][2] += dt*s->atoms->p[iOff][2]*invMass;
+          }
       }
    }
+// TODO remove
+#pragma omp taskwait
 }
 
 /// Calculates total kinetic and potential energy across all tasks.  The
@@ -118,14 +125,21 @@ void kineticEnergy(SimFlat* s)
    {
       for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
       {
+          real3* _a = &s->atoms->p[iOff];
+          int* _b = &s->atoms->iSpecies[iOff];
+#pragma omp task firstprivate(iOff) depend(in: _a, _b) depend(inout: kenergy)
+        {
          int iSpecies = s->atoms->iSpecies[iOff];
          real_t invMass = 0.5/s->species[iSpecies].mass;
+#pragma omp atomic
          kenergy += ( s->atoms->p[iOff][0] * s->atoms->p[iOff][0] +
-         s->atoms->p[iOff][1] * s->atoms->p[iOff][1] +
-         s->atoms->p[iOff][2] * s->atoms->p[iOff][2] )*invMass;
+             s->atoms->p[iOff][1] * s->atoms->p[iOff][1] +
+             s->atoms->p[iOff][2] * s->atoms->p[iOff][2] )*invMass;
+        }
       }
    }
 
+#pragma omp taskwait
    eLocal[1] = kenergy;
 
    real_t eSum[2];
