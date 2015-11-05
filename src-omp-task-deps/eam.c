@@ -339,6 +339,7 @@ int eamForce(SimFlat* s)
 #pragma omp taskwait
    // exchange derivative of the embedding energy with repsect to rhobar
    startTimer(eamHaloTimer);
+   // TODO tasks here
    haloExchange(pot->forceExchange, pot->forceExchangeData);
    stopTimer(eamHaloTimer);
 
