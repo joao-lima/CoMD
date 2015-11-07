@@ -154,7 +154,7 @@ int ljForce(SimFlat* s)
    real_t ePot = 0.0;
    s->ePotential = 0.0;
    int fSize = s->boxes->nTotalBoxes*MAXATOMS;
-//   #pragma omp parallel for
+   #pragma omp parallel for
    for (int ii=0; ii<fSize; ++ii)
    {
       zeroReal3(s->atoms->f[ii]);
@@ -169,7 +169,7 @@ int ljForce(SimFlat* s)
    int nNbrBoxes = 27;
 
    // loop over local boxes
-//   #pragma omp parallel for reduction(+:ePot)
+   #pragma omp parallel for reduction(+:ePot)
    for (int iBox=0; iBox<s->boxes->nLocalBoxes; iBox++)
    {
       int nIBox = s->boxes->nAtoms[iBox];

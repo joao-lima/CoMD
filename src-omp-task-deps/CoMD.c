@@ -112,9 +112,6 @@ int main(int argc, char** argv)
    const int printRate = sim->printRate;
    int iStep = 0;
    profileStart(loopTimer);
-//#pragma omp parallel
-//#pragma omp single
-{
    for (; iStep<nSteps;)
    {
       startTimer(commReduceTimer);
@@ -129,7 +126,6 @@ int main(int argc, char** argv)
 
       iStep += printRate;
    }
-} // parallel
    profileStop(loopTimer);
 
    sumAtoms(sim);
