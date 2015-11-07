@@ -70,17 +70,17 @@ void computeForce(SimFlat* s)
 
 void advanceVelocity(SimFlat* s, int nBoxes, real_t dt)
 {
-//   #pragma omp parallel for
-#pragma omp parallel
-#pragma omp single
+//#pragma omp parallel
+//#pragma omp single
 {
+#pragma omp parallel for
    for (int iBox=0; iBox<nBoxes; iBox++)
    {
       for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
       {
-          real3* _a = &s->atoms->f[iOff];
-          real3* _b = &s->atoms->p[iOff];
-#pragma omp task firstprivate(iOff) depend(in: _a) depend(inout: _b)
+//          real3* _a = &s->atoms->f[iOff];
+//          real3* _b = &s->atoms->p[iOff];
+//#pragma omp task firstprivate(iOff) depend(in: _a) depend(inout: _b)
 	      {
          s->atoms->p[iOff][0] += dt*s->atoms->f[iOff][0];
          s->atoms->p[iOff][1] += dt*s->atoms->f[iOff][1];
@@ -89,24 +89,24 @@ void advanceVelocity(SimFlat* s, int nBoxes, real_t dt)
       }
    }
 // TODO remove
-#pragma omp taskwait
+//#pragma omp taskwait
 } // parallel
 }
 
 void advancePosition(SimFlat* s, int nBoxes, real_t dt)
 {
-//   #pragma omp parallel for
-#pragma omp parallel
-#pragma omp single
+//#pragma omp parallel
+//#pragma omp single
 {
+#pragma omp parallel for
    for (int iBox=0; iBox<nBoxes; iBox++)
    {
       for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
       {
-          real3* _a = &s->atoms->p[iOff];
-          real3* _b = &s->atoms->r[iOff];
-          int* _c = &s->atoms->iSpecies[iOff];
-#pragma omp task firstprivate(iOff) depend(in: _a, _c) depend(inout: _b)
+//          real3* _a = &s->atoms->p[iOff];
+//          real3* _b = &s->atoms->r[iOff];
+//          int* _c = &s->atoms->iSpecies[iOff];
+//#pragma omp task firstprivate(iOff) depend(in: _a, _c) depend(inout: _b)
           {
          int iSpecies = s->atoms->iSpecies[iOff];
          real_t invMass = 1.0/s->species[iSpecies].mass;
@@ -117,7 +117,7 @@ void advancePosition(SimFlat* s, int nBoxes, real_t dt)
       }
    }
 // TODO remove
-#pragma omp taskwait
+//#pragma omp taskwait
 } // parallel
 }
 
@@ -181,7 +181,7 @@ void redistributeAtoms(SimFlat* sim)
    haloExchange(sim->atomExchange, sim);
    stopTimer(atomHaloTimer);
 
-//   #pragma omp parallel for
+#pragma omp parallel for
    for (int ii=0; ii<sim->boxes->nTotalBoxes; ++ii)
       sortAtomsInCell(sim->atoms, sim->boxes, ii);
 }
