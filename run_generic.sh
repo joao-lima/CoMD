@@ -3,7 +3,48 @@
 echo Requisitos necessários
 echo - gcc \>\= 5.2.0
 echo Encontrados no sistema
-echo - gcc `{gcc --version | grep gcc | awk '{print $4}'}`
+#echo - gcc `{gcc --version | grep gcc | awk '{print $4}'}`
+echo $(gcc -v)
+
+#dorun=1
+outdir=$HOME/res
+
+comd_exec(){
+    prog=$1
+    n=$2
+    threads=$3
+    niter=$4
+    ver=$(date +%s)
+    out="$outdir/${prog}-${n}-${threads}-${ver}.log"
+
+    echo "OMP_NUM_THREADS=$threads komp-run ./$prog -x $n -y $n -z $n >> $out"
+    if [ ! -z "$dorun" ]
+    then
+        for i in $(seq 1 $niter)
+        do
+                OMP_NUM_THREADS=$threads komp-run ./$prog -x $n -y $n -z $n >> $out
+        done
+    fi
+}
+
+size=100
+niter=30
+ncpu=48
+comd_exec "CoMD-serial" $size 1 5
+for th in $(seq $ncpu -2 1)
+do
+    comd_exec "CoMD-openmp" $size $th $niter
+done
+for th in $(seq $ncpu -2 1)
+do
+    comd_exec "CoMD-omp-task" $size $th $niter
+done
+for th in $(seq $ncpu -2 1)
+do
+    comd_exec "CoMD-omp-task-deps" $size $th $niter 
+done
+
+exit 0
 
 # Serial
 echo Compilando src-serial...
