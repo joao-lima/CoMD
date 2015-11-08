@@ -361,11 +361,11 @@ int eamForce(SimFlat* s)
                     // loop over atoms in jBox
                     for (int jOff=MAXATOMS*jBox; jOff<(MAXATOMS*jBox+nJBox); jOff++)
                     { 
-        //                real3* _a = &s->atoms->r[iOff];
-        //                real3* _b = &s->atoms->r[jOff];
-        //                real_t* _c = &pot->dfEmbed[iOff];
-        //                real_t* _d = &pot->dfEmbed[jOff];
-        //                real3* _e = &s->atoms->f[iOff];
+                        real3* _a = &s->atoms->r[iOff];
+                        real3* _b = &s->atoms->r[jOff];
+                        real_t* _c = &pot->dfEmbed[iOff];
+                        real_t* _d = &pot->dfEmbed[jOff];
+                        real3* _e = &s->atoms->f[iOff];
         #pragma omp task firstprivate(iOff, jOff) depend(in: _a, _b, _c, _d) depend(inout: _e)
                     {
                        real_t r2 = 0.0;
