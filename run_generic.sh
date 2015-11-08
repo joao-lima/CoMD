@@ -27,7 +27,7 @@ comd_exec(){
     fi
 }
 
-size=100
+size=80
 niter=30
 ncpu=48
 comd_exec "CoMD-serial" $size 1 5
