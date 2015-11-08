@@ -237,22 +237,23 @@ int eamForce(SimFlat* s)
    int fsize = s->boxes->nTotalBoxes*MAXATOMS;
    #pragma omp parallel
    {
-       #pragma omp for 
-       for (int ii=0; ii<fsize; ii++)
-       {
-    //    real3* _a = &s->atoms->f[ii];
-    //    real_t* _b = &s->atoms->U[ii];
-    //    real_t* _c = &pot->dfEmbed[ii];
-    //    real_t* _d = &pot->rhobar[ii];
-    //#pragma omp task firstprivate(ii) depend(out: _a, _b, _c, _d)
-          zeroReal3(s->atoms->f[ii]);
-          s->atoms->U[ii] = 0.;
-          pot->dfEmbed[ii] = 0.;
-          pot->rhobar[ii] = 0.;
-       }
-
       #pragma omp single
       {
+           for (int ii=0; ii<fsize; ii++)
+           {
+            real3* _a = &s->atoms->f[ii];
+            real_t* _b = &s->atoms->U[ii];
+            real_t* _c = &pot->dfEmbed[ii];
+            real_t* _d = &pot->rhobar[ii];
+            #pragma omp task firstprivate(ii) depend(out: _a, _b, _c, _d)
+            {
+                  zeroReal3(s->atoms->f[ii]);
+                  s->atoms->U[ii] = 0.;
+                  pot->dfEmbed[ii] = 0.;
+                  pot->rhobar[ii] = 0.;
+            }
+           }
+
            int nNbrBoxes = 27;
            // loop over local boxes
            for (int iBox=0; iBox<s->boxes->nLocalBoxes; iBox++)
