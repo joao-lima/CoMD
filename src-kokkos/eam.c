@@ -221,7 +221,7 @@ struct firstPass{
    SimFlat* s;
    EamPotential* pot;
    int nNbrBoxes;
-   firstPass(SimFlat* s, EamPotential* pot) : s(s), pot(pot) {
+   firstPass(SimFlat* s_, EamPotential* pot_) : s(s_), pot(pot_) {
       nNbrBoxes = 27;
    }
    KOKKOS_INLINE_FUNCTION
@@ -278,7 +278,7 @@ struct firstPass{
 struct secondPass{
    SimFlat* s;
    EamPotential* pot;
-   firstPass(SimFlat* s, EamPotential* pot) : s(s), pot(pot) {}
+   secondPass(SimFlat* s_, EamPotential* pot_) : s(s_), pot(pot_) {}
    KOKKOS_INLINE_FUNCTION
    void operator()(const int& iBox, real_t& etot){
       int nIBox =  s->boxes->nAtoms[iBox];
@@ -299,7 +299,7 @@ struct thirdPass{
    SimFlat* s;
    EamPotential* pot;
    int nNbrBoxes;
-   firstPass(SimFlat* s, EamPotential* pot) : s(s), pot(pot) {
+   thirdPass(SimFlat* s_, EamPotential* pot_) : s(s_), pot(pot_) {
       nNbrBoxes = 27;
    }
    KOKKOS_INLINE_FUNCTION
