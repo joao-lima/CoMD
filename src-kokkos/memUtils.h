@@ -1,30 +1,35 @@
 /// \file
 /// Wrappers for memory allocation.
 
-#ifndef _MEMUTILS_H_
-#define _MEMUTILS_H_
+#pragma once
 
 #include <stdlib.h>
+#include <Kokkos_Core.hpp>
 
-#define freeMe(s,element) {if(s->element) comdFree(s->element);  s->element = NULL;}
+#define freeMe(s,element) {if(s->element) comdFree<int>((int*)s->element);  s->element = NULL;}
 
-static void* comdMalloc(size_t iSize)
+template<class T>
+T* comdMalloc(size_t n)
 {
-   return malloc(iSize);
+   return (T*) Kokkos::kokkos_malloc(n*sizeof(T));
 }
 
-static void* comdCalloc(size_t num, size_t iSize)
+template<class T>
+T* comdCalloc(size_t num)
 {
-   return calloc(num, iSize);
+   return (T*) Kokkos::kokkos_malloc(num*sizeof(T));
 }
 
-static void* comdRealloc(void* ptr, size_t iSize)
+template<class T>
+T* comdRealloc(const T* ptr, size_t n)
 {
-   return realloc(ptr, iSize);
+   return (T*) Kokkos::kokkos_realloc<>(ptr, n*sizeof(T));
 }
 
-static void comdFree(void *ptr)
+template<class T>
+void comdFree(T *ptr)
 {
-   free(ptr);
+   Kokkos::kokkos_free<>(ptr);
 }
-#endif
+
+

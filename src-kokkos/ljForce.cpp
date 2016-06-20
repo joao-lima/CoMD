@@ -110,7 +110,7 @@ void ljDestroy(BasePotential** inppot)
 /// Initialize an Lennard Jones potential for Copper.
 BasePotential* initLjPot(void)
 {
-   LjPotential *pot = (LjPotential*)comdMalloc(sizeof(LjPotential));
+   LjPotential *pot = comdMalloc<LjPotential>(1);
    pot->force = ljForce;
    pot->print = ljPrint;
    pot->destroy = ljDestroy;

@@ -173,7 +173,7 @@ static void typeNotSupported(const char* callSite, const char* type);
 /// \param [in] type  The file format of the potential file (setfl or funcfl).
 BasePotential* initEamPot(const char* dir, const char* file, const char* type)
 {
-   EamPotential* pot = comdMalloc(sizeof(EamPotential));
+   EamPotential* pot = comdMalloc<EamPotential>(1);
    assert(pot);
    pot->force = eamForce;
    pot->print = eamPrint;
@@ -207,7 +207,9 @@ BasePotential* initEamPot(const char* dir, const char* file, const char* type)
 struct zeroAll{
    SimFlat* s;
    EamPotential* pot;
+  
    zeroAll(SimFlat* s_, EamPotential* pot_) : s(s_), pot(pot_) {}
+
    KOKKOS_INLINE_FUNCTION
    void operator()(const int& ii) const{
       zeroReal3(s->atoms->f[ii]);
@@ -221,11 +223,14 @@ struct firstPass{
    SimFlat* s;
    EamPotential* pot;
    int nNbrBoxes;
-   firstPass(SimFlat* s_, EamPotential* pot_) : s(s_), pot(pot_) {
+   real_t rCut2;
+   
+   firstPass(SimFlat* s_, EamPotential* pot_, real_t rCut2_) : s(s_), pot(pot_), rCut2(rCut2_) {
       nNbrBoxes = 27;
    }
+   // TODO falta os outros operadores de reducão 
    KOKKOS_INLINE_FUNCTION
-   void operator()(const int& iBox, real_t& etot){
+   void operator()(const int& iBox, real_t& etot) const{
       int nIBox = s->boxes->nAtoms[iBox];
 
       // loop over neighbor boxes of iBox (some may be halo boxes)
@@ -278,9 +283,11 @@ struct firstPass{
 struct secondPass{
    SimFlat* s;
    EamPotential* pot;
+  
    secondPass(SimFlat* s_, EamPotential* pot_) : s(s_), pot(pot_) {}
+  
    KOKKOS_INLINE_FUNCTION
-   void operator()(const int& iBox, real_t& etot){
+   void operator()(const int& iBox, real_t& etot) const {
       int nIBox =  s->boxes->nAtoms[iBox];
 
       // loop over atoms in iBox
@@ -299,11 +306,14 @@ struct thirdPass{
    SimFlat* s;
    EamPotential* pot;
    int nNbrBoxes;
-   thirdPass(SimFlat* s_, EamPotential* pot_) : s(s_), pot(pot_) {
+   real_t rCut2;
+
+   thirdPass(SimFlat* s_, EamPotential* pot_, real_t rCut2_) : s(s_), pot(pot_), rCut2(rCut2_) {
       nNbrBoxes = 27;
    }
+
    KOKKOS_INLINE_FUNCTION
-   void operator()(const int& iBox){
+   void operator()(const int& iBox) const {
       int nIBox = s->boxes->nAtoms[iBox];
 
       // loop over neighbor boxes of iBox (some may be halo boxes)
@@ -365,16 +375,16 @@ int eamForce(SimFlat* s)
    if (pot->forceExchange == NULL)
    {
       int maxTotalAtoms = MAXATOMS*s->boxes->nTotalBoxes;
-      pot->dfEmbed = comdMalloc(maxTotalAtoms*sizeof(real_t));
-      pot->rhobar  = comdMalloc(maxTotalAtoms*sizeof(real_t));
+      pot->dfEmbed = comdMalloc<real_t>(maxTotalAtoms);
+      pot->rhobar  = comdMalloc<real_t>(maxTotalAtoms);
       pot->forceExchange = initForceHaloExchange(s->domain, s->boxes);
-      pot->forceExchangeData = comdMalloc(sizeof(ForceExchangeData));
+      pot->forceExchangeData = comdMalloc<ForceExchangeDataSt>(1);
       pot->forceExchangeData->dfEmbed = pot->dfEmbed;
       pot->forceExchangeData->boxes = s->boxes;
    }
    
    real_t rCut2 = pot->cutoff*pot->cutoff;
-   real_t etot = 0.,;
+   real_t etot = 0.;
    real_t etot_tmp;
 
    // zero forces / energy / rho /rhoprime
@@ -446,8 +456,8 @@ int eamForce(SimFlat* s)
       } // loop over neighbor boxes
    } // loop over local boxes*/
 
-   firstPass first_pass(s,pot);
-   Kokkos::parallel_reduce(s->boxes->nLocalBoxes, firstPass, etot);
+   firstPass first_pass(s, pot, rCut2);
+   Kokkos::parallel_reduce(s->boxes->nLocalBoxes, first_pass, etot);
 
    // Compute Embedding Energy
    // loop over all local boxes
@@ -524,7 +534,7 @@ int eamForce(SimFlat* s)
       } // loop over neighbor boxes
    } // loop over local boxes*/
 
-   thirdPass third_pass(s,pot);
+   thirdPass third_pass(s, pot, rCut2);
    Kokkos::parallel_for(s->boxes->nLocalBoxes, third_pass);
 
    s->ePotential = (real_t) etot;
@@ -610,11 +620,10 @@ void eamBcastPotential(EamPotential* pot)
 InterpolationObject* initInterpolationObject(
    int n, real_t x0, real_t dx, real_t* data)
 {
-   InterpolationObject* table =
-      (InterpolationObject *)comdMalloc(sizeof(InterpolationObject)) ;
+   InterpolationObject* table = comdMalloc<InterpolationObject>(1);
    assert(table);
 
-   table->values = (real_t*)comdCalloc(1, (n+3)*sizeof(real_t));
+   table->values = comdCalloc<real_t>(n+3);
    assert(table->values);
 
    table->values++; 
@@ -718,11 +727,11 @@ void bcastInterpolationObject(InterpolationObject** table)
    if (getMyRank() != 0)
    {
       assert(*table == NULL);
-      *table = comdMalloc(sizeof(InterpolationObject));
+      *table = comdMalloc<InterpolationObject>(1);
       (*table)->n      = buf.n;
       (*table)->x0     = buf.x0;
       (*table)->invDx  = buf.invDx;
-      (*table)->values = comdMalloc(sizeof(real_t) * (buf.n+3) );
+      (*table)->values = comdMalloc<real_t>(buf.n+3);
       (*table)->values++;
    }
    
@@ -832,7 +841,7 @@ void eamReadSetfl(EamPotential* pot, const char* dir, const char* potName)
    
    // allocate read buffer
    int bufSize = MAX(nRho, nR);
-   real_t* buf = comdMalloc(bufSize * sizeof(real_t));
+   real_t* buf = comdMalloc<real_t>(bufSize);
    real_t x0 = 0.0;
 
    // Read embedding energy F(rhobar)
@@ -943,7 +952,7 @@ void eamReadFuncfl(EamPotential* pot, const char* dir, const char* potName)
 
    // allocate read buffer
    int bufSize = MAX(nRho, nR);
-   real_t* buf = comdMalloc(bufSize * sizeof(real_t));
+   real_t* buf = comdMalloc<real_t>(bufSize);
 
    // read embedding energy
    for (int ii=0; ii<nRho; ++ii)

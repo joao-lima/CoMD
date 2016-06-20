@@ -83,7 +83,7 @@ static void getTuple(LinkCell* boxes, int iBox, int* ixp, int* iyp, int* izp);
 LinkCell* initLinkCells(const Domain* domain, real_t cutoff)
 {
    assert(domain);
-   LinkCell* ll = comdMalloc(sizeof(LinkCell));
+   LinkCell* ll = comdMalloc<LinkCell>(1);
 
    for (int i = 0; i < 3; i++)
    {
@@ -102,17 +102,17 @@ LinkCell* initLinkCells(const Domain* domain, real_t cutoff)
 
    ll->nTotalBoxes = ll->nLocalBoxes + ll->nHaloBoxes;
    
-   ll->nAtoms = comdMalloc(ll->nTotalBoxes*sizeof(int));
+   ll->nAtoms = comdMalloc<int>(ll->nTotalBoxes);
    for (int iBox=0; iBox<ll->nTotalBoxes; ++iBox)
       ll->nAtoms[iBox] = 0;
 
    assert ( (ll->gridSize[0] >= 2) && (ll->gridSize[1] >= 2) && (ll->gridSize[2] >= 2) );
 
    // Added creating neighbors once
-   ll->nbrBoxes = comdMalloc(ll->nTotalBoxes*sizeof(int*));
+   ll->nbrBoxes = comdMalloc<int*>(ll->nTotalBoxes);
    for (int iBox=0; iBox<ll->nTotalBoxes; ++iBox)
    {
-      ll->nbrBoxes[iBox] = comdMalloc(27*sizeof(int));
+      ll->nbrBoxes[iBox] = comdMalloc<int>(27);
    }
 
    for (int iBox=0; iBox<ll->nLocalBoxes; ++iBox)

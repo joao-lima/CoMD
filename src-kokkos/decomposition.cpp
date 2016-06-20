@@ -19,7 +19,7 @@ Domain* initDecomposition(int xproc, int yproc, int zproc, real3 globalExtent)
 {
    assert( xproc * yproc * zproc == getNRanks());
 
-   Domain* dd = comdMalloc(sizeof(Domain));
+   Domain* dd = comdMalloc<Domain>(1);
    dd->procGrid[0] = xproc;
    dd->procGrid[1] = yproc;
    dd->procGrid[2] = zproc;

@@ -69,7 +69,7 @@ void initParallel(int* argc, char*** argv)
    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
    MPI_Comm_size(MPI_COMM_WORLD, &nRanks);
 #endif
-   Kokkos::initialize(argc,argv);
+   Kokkos::initialize(*argc, *argv);
 }
 
 void destroyParallel()

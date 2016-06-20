@@ -37,7 +37,7 @@ static char* dupString(const char* s)
 {
    char* d;
    if ( ! s ) s = "";
-   d = (char*)comdCalloc((strlen(s)+1),sizeof(char));
+   d = comdCalloc<char>(strlen(s)+1);
    strcpy(d, s);
    return d;
 }
@@ -47,7 +47,7 @@ static MyOption* myOptionAlloc(
    int has_arg, const char type, void* dataPtr, int dataSize, const char* help)
 {
    static int iBase=129;
-   MyOption* o = (MyOption*)comdCalloc(1, sizeof(MyOption));
+   MyOption* o = comdCalloc<MyOption>(1);
    o->help = dupString(help);
    o->longArg = dupString(longOption);
    if(shortOption) o->shortArg[0] = (unsigned char)shortOption;
@@ -156,8 +156,8 @@ void processArgs(int argc, char** argv)
    {n++,o=nextOption(o);}
 
    o = myargs;
-   sArgs= (char*)comdCalloc(2*(n+2),sizeof(char));
-   opts = (struct option*)comdCalloc(n,sizeof(struct option));
+   sArgs= comdCalloc<char>(2*(n+2));
+   opts = comdCalloc<struct option>(n);
    for (i=0; i<n; i++)
    {
       opts[i].name = o->longArg;

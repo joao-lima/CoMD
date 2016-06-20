@@ -1,8 +1,8 @@
-KOKKOS_PATH = /opt/kokkos
+KOKKOS_PATH = ${HOME}/kokkos-tutorial/kokkos
 KOKKOS_DEVICES = "OpenMP"
 EXE_NAME = "CoMD-kokkos"
 
-SRC = $(wildcard *.c)
+SRC = $(wildcard *.cpp)
 
 default: build
 	echo "Start Build"
@@ -20,7 +20,7 @@ LINKFLAGS = -g -fpermissive -Wwrite-strings
 
 DEPFLAGS = -M
 
-OBJ = $(SRC:.cc=.o)
+OBJ = $(SRC:.cpp=.o)
 LIB = -lm
 
 include $(KOKKOS_PATH)/Makefile.kokkos
@@ -44,11 +44,11 @@ clean: kokkos-clean
 
 # Compilation rules
 
-%.o:%.cc $(KOKKOS_CPP_DEPENDS)
+%.o:%.cpp $(KOKKOS_CPP_DEPENDS)
 	$(CXX) $(KOKKOS_CPPFLAGS) $(KOKKOS_CXXFLAGS) $(CXXFLAGS) $(EXTRA_INC) -c $<
 
 CoMD_info.h: Makefile
-	./generate_info_header ${CoMD_VARIANT} "$(CC)" "$(CFLAGS)" "$(LDFLAGS)"
+	./generate_info_header ${CoMD_VARIANT} "$(CXX)" "$(CXXFLAGS)" "$(LDFLAGS)"
 
 $(BIN_DIR):
 	@if [ ! -d ${BIN_DIR} ]; then mkdir -p ${BIN_DIR} ; fi
