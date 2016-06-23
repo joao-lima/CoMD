@@ -25,7 +25,7 @@ LIB = -lm
 
 include $(KOKKOS_PATH)/Makefile.kokkos
 
-BIN_DIR=../bin
+BIN_DIR=../bin/
 
 # Check for double precision
 ifeq ($(DOUBLE_PRECISION), ON)
@@ -37,7 +37,7 @@ endif
 build: $(EXE)
 
 $(EXE): $(BIN_DIR) CoMD_info.h $(OBJ) $(KOKKOS_LINK_DEPENDS)
-	$(LINK) $(KOKKOS_LDFLAGS) $(LINKFLAGS) $(EXTRA_PATH) $(OBJ) $(KOKKOS_LIBS) $(LIB) -o $(EXE)
+	$(LINK) $(KOKKOS_LDFLAGS) $(LINKFLAGS) $(EXTRA_PATH) $(OBJ) $(KOKKOS_LIBS) $(LIB) -o $(BIN_DIR)$(EXE)
 
 clean: kokkos-clean 
 	rm -f *.o *.cuda *.host
