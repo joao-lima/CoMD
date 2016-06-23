@@ -232,7 +232,7 @@ struct firstPass{
    }
    // TODO falta os outros operadores de reducão 
    KOKKOS_INLINE_FUNCTION
-   void operator()(const int& iBox, real_t& etot) const{
+   void operator()(const int& iBox, value_type& etot) const{
       int nIBox = s->boxes->nAtoms[iBox];
 
       // loop over neighbor boxes of iBox (some may be halo boxes)
@@ -291,7 +291,7 @@ struct secondPass{
    secondPass(SimFlat* s_, EamPotential* pot_) : s(s_), pot(pot_) {}
   
    KOKKOS_INLINE_FUNCTION
-   void operator()(const int& iBox, real_t& etot) const {
+   void operator()(const int& iBox, value_type& etot) const {
       int nIBox =  s->boxes->nAtoms[iBox];
 
       // loop over atoms in iBox
@@ -483,6 +483,7 @@ int eamForce(SimFlat* s)
 
    secondPass second_pass(s,pot);
    etot_tmp = etot;
+   etot = 0;
    Kokkos::parallel_reduce(s->boxes->nLocalBoxes, second_pass, etot);
    etot += etot_tmp;
 
