@@ -220,6 +220,8 @@ struct zeroAll{
 };
 
 struct firstPass{
+   typedef real_t value_type;
+
    SimFlat* s;
    EamPotential* pot;
    int nNbrBoxes;
@@ -281,6 +283,8 @@ struct firstPass{
 };
 
 struct secondPass{
+   typedef real_t value_type;
+
    SimFlat* s;
    EamPotential* pot;
   
