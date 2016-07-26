@@ -77,6 +77,7 @@
 
 static void copyAtom(LinkCell* boxes, Atoms* atoms, int iAtom, int iBox, int jAtom, int jBox);
 static int getBoxFromCoord(LinkCell* boxes, real_t rr[3]);
+static int getBoxFromCoordView(LinkCell* boxes, real3_view rr, int ii);
 static void emptyHaloCells(LinkCell* boxes);
 static void getTuple(LinkCell* boxes, int iBox, int* ixp, int* iyp, int* izp);
 
@@ -185,13 +186,20 @@ void putAtomInBox(LinkCell* boxes, Atoms* atoms,
    atoms->gid[iOff] = gid;
    atoms->iSpecies[iOff] = iType;
    
-   atoms->r[iOff][0] = x;
-   atoms->r[iOff][1] = y;
-   atoms->r[iOff][2] = z;
+   // atoms->r[iOff][0] = x;
+   // atoms->r[iOff][1] = y;
+   // atoms->r[iOff][2] = z;
    
-   atoms->p[iOff][0] = px;
-   atoms->p[iOff][1] = py;
-   atoms->p[iOff][2] = pz;
+   // atoms->p[iOff][0] = px;
+   // atoms->p[iOff][1] = py;
+   // atoms->p[iOff][2] = pz;
+   atoms->r(iOff, 0) = x;
+   atoms->r(iOff, 1) = y;
+   atoms->r(iOff, 2) = z;
+   
+   atoms->p(iOff, 0) = px;
+   atoms->p(iOff, 1) = py;
+   atoms->p(iOff, 2) = pz;
 }
 
 /// Calculates the link cell index from the grid coords.  The valid
@@ -294,7 +302,8 @@ void updateLinkCells(LinkCell* boxes, Atoms* atoms)
       int ii=0;
       while (ii < boxes->nAtoms[iBox])
       {
-         int jBox = getBoxFromCoord(boxes, atoms->r[iOff+ii]);
+         //int jBox = getBoxFromCoord(boxes, atoms->r[iOff+ii]);
+         int jBox = getBoxFromCoordView(boxes, atoms->r, iOff+ii);
          if (jBox != iBox)
             moveAtom(boxes, atoms, ii, iBox, jBox);
          else
@@ -328,10 +337,17 @@ void copyAtom(LinkCell* boxes, Atoms* atoms, int iAtom, int iBox, int jAtom, int
    const int jOff = MAXATOMS*jBox+jAtom;
    atoms->gid[jOff] = atoms->gid[iOff];
    atoms->iSpecies[jOff] = atoms->iSpecies[iOff];
-   memcpy(atoms->r[jOff], atoms->r[iOff], sizeof(real3));
-   memcpy(atoms->p[jOff], atoms->p[iOff], sizeof(real3));
-   memcpy(atoms->f[jOff], atoms->f[iOff], sizeof(real3));
-   memcpy(atoms->U+jOff,  atoms->U+iOff,  sizeof(real_t));
+   //memcpy(atoms->r[jOff], atoms->r[iOff], sizeof(real3));
+   //memcpy(atoms->p[jOff], atoms->p[iOff], sizeof(real3));
+   //memcpy(atoms->f[jOff], atoms->f[iOff], sizeof(real3));
+   //memcpy(atoms->U+jOff,  atoms->U+iOff,  sizeof(real_t));
+   for (int i=0; i<3; i++){
+      atoms->r(jOff, i) = atoms->r(iOff, i);
+      atoms->p(jOff, i) = atoms->p(iOff, i);
+      atoms->f(jOff, i) = atoms->f(iOff, i);
+   }
+   atoms->U(jOff) = atoms->U(iOff);
+   
 }
 
 /// Get the index of the link cell that contains the specified
@@ -369,6 +385,41 @@ int getBoxFromCoord(LinkCell* boxes, real_t rr[3])
    else
       iy = gridSize[1];
    if (rr[2] < localMax[2])
+   {
+      if (iz == gridSize[2]) iz = gridSize[2] - 1;
+   }
+   else
+      iz = gridSize[2];
+   
+   return getBoxFromTuple(boxes, ix, iy, iz);
+}
+
+// Kokkos::View implementation
+int getBoxFromCoordView(LinkCell* boxes, real3_view rr, int ii)
+{
+   const real_t* localMin = boxes->localMin; // alias
+   const real_t* localMax = boxes->localMax; // alias
+   const int*    gridSize = boxes->gridSize; // alias
+   int ix = (int)(floor((rr(ii, 0) - localMin[0])*boxes->invBoxSize[0]));
+   int iy = (int)(floor((rr(ii, 1) - localMin[1])*boxes->invBoxSize[1]));
+   int iz = (int)(floor((rr(ii, 2) - localMin[2])*boxes->invBoxSize[2]));
+
+
+   // For each axis, if we are inside the local domain, make sure we get
+   // a local link cell.  Otherwise, make sure we get a halo link cell.
+   if (rr(ii, 0) < localMax[0]) 
+   {
+      if (ix == gridSize[0]) ix = gridSize[0] - 1;
+   }
+   else
+      ix = gridSize[0]; // assign to halo cell
+   if (rr(ii, 1) < localMax[1])
+   {
+      if (iy == gridSize[1]) iy = gridSize[1] - 1;
+   }
+   else
+      iy = gridSize[1];
+   if (rr(ii, 2) < localMax[2])
    {
       if (iz == gridSize[2]) iz = gridSize[2] - 1;
    }

@@ -157,8 +157,10 @@ int ljForce(SimFlat* s)
    #pragma omp parallel for
    for (int ii=0; ii<fSize; ++ii)
    {
-      zeroReal3(s->atoms->f[ii]);
-      s->atoms->U[ii] = 0.;
+      //zeroReal3(s->atoms->f[ii]);
+      //s->atoms->U[ii] = 0.;
+      zeroReal3(s->atoms->f, ii);
+      s->atoms->U(ii) = 0.;
    }
    
    real_t s6 = sigma*sigma*sigma*sigma*sigma*sigma;
@@ -194,7 +196,8 @@ int ljForce(SimFlat* s)
                real_t r2 = 0.0;
                for (int m=0; m<3; m++)
                {
-                  dr[m] = s->atoms->r[iOff][m]-s->atoms->r[jOff][m];
+                  //dr[m] = s->atoms->r[iOff][m]-s->atoms->r[jOff][m];
+                  dr[m] = s->atoms->r(iOff, m)-s->atoms->r(jOff, m);
                   r2+=dr[m]*dr[m];
                }
 
@@ -206,14 +209,16 @@ int ljForce(SimFlat* s)
                   r2 = 1.0/r2;
                   real_t r6 = s6 * (r2*r2*r2);
                   real_t eLocal = r6 * (r6 - 1.0) - eShift;
-                  s->atoms->U[iOff] += 0.5*eLocal;
+                  //s->atoms->U[iOff] += 0.5*eLocal;
+                  s->atoms->U(iOff) = s->atoms->U(iOff) + 0.5*eLocal;
                   ePot += 0.5*eLocal;
 
                   // different formulation to avoid sqrt computation
                   real_t fr = - 4.0*epsilon*r6*r2*(12.0*r6 - 6.0);
                   for (int m=0; m<3; m++)
                   {
-                     s->atoms->f[iOff][m] -= dr[m]*fr;
+                     //s->atoms->f[iOff][m] -= dr[m]*fr;
+                     s->atoms->f(iOff, m) -= dr[m]*fr;
                   }
                }
             } // loop over atoms in jBox

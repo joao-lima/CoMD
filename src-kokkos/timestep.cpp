@@ -73,9 +73,12 @@ void advanceVelocity(SimFlat* s, int nBoxes, real_t dt)
    {
       for (int iOff=MAXATOMS*iBox,ii=0; ii<s->boxes->nAtoms[iBox]; ii++,iOff++)
       {
-         s->atoms->p[iOff][0] += dt*s->atoms->f[iOff][0];
-         s->atoms->p[iOff][1] += dt*s->atoms->f[iOff][1];
-         s->atoms->p[iOff][2] += dt*s->atoms->f[iOff][2];
+         // s->atoms->p[iOff][0] += dt*s->atoms->f[iOff][0];
+         // s->atoms->p[iOff][1] += dt*s->atoms->f[iOff][1];
+         // s->atoms->p[iOff][2] += dt*s->atoms->f[iOff][2];
+         s->atoms->p(iOff, 0) = s->atoms->p(iOff, 0) + dt*s->atoms->f(iOff, 0);
+         s->atoms->p(iOff, 1) = s->atoms->p(iOff, 1) + dt*s->atoms->f(iOff, 1);
+         s->atoms->p(iOff, 2) = s->atoms->p(iOff, 2) + dt*s->atoms->f(iOff, 2);
       }
    }
 }
@@ -89,9 +92,12 @@ void advancePosition(SimFlat* s, int nBoxes, real_t dt)
       {
          int iSpecies = s->atoms->iSpecies[iOff];
          real_t invMass = 1.0/s->species[iSpecies].mass;
-         s->atoms->r[iOff][0] += dt*s->atoms->p[iOff][0]*invMass;
-         s->atoms->r[iOff][1] += dt*s->atoms->p[iOff][1]*invMass;
-         s->atoms->r[iOff][2] += dt*s->atoms->p[iOff][2]*invMass;
+         // s->atoms->r[iOff][0] += dt*s->atoms->p[iOff][0]*invMass;
+         // s->atoms->r[iOff][1] += dt*s->atoms->p[iOff][1]*invMass;
+         // s->atoms->r[iOff][2] += dt*s->atoms->p[iOff][2]*invMass;
+         s->atoms->r(iOff, 0) = s->atoms->r(iOff, 0) + dt*s->atoms->p(iOff, 0)*invMass;
+         s->atoms->r(iOff, 1) = s->atoms->r(iOff, 1) + dt*s->atoms->p(iOff, 1)*invMass;
+         s->atoms->r(iOff, 2) = s->atoms->r(iOff, 2) + dt*s->atoms->p(iOff, 2)*invMass;
       }
    }
 }
@@ -111,9 +117,12 @@ void kineticEnergy(SimFlat* s)
       {
          int iSpecies = s->atoms->iSpecies[iOff];
          real_t invMass = 0.5/s->species[iSpecies].mass;
-         kenergy += ( s->atoms->p[iOff][0] * s->atoms->p[iOff][0] +
+         /*kenergy += ( s->atoms->p[iOff][0] * s->atoms->p[iOff][0] +
          s->atoms->p[iOff][1] * s->atoms->p[iOff][1] +
-         s->atoms->p[iOff][2] * s->atoms->p[iOff][2] )*invMass;
+         s->atoms->p[iOff][2] * s->atoms->p[iOff][2] )*invMass;*/
+         kenergy += ( s->atoms->p(iOff, 0) * s->atoms->p(iOff, 0) +
+            s->atoms->p(iOff, 1) * s->atoms->p(iOff, 1) +
+            s->atoms->p(iOff, 2) * s->atoms->p(iOff, 2) )*invMass;
       }
    }
 

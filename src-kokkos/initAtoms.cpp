@@ -28,10 +28,14 @@ Atoms* initAtoms(LinkCell* boxes)
 
    atoms->gid =      comdMalloc<int>(maxTotalAtoms);
    atoms->iSpecies = comdMalloc<int>(maxTotalAtoms);
-   atoms->r =        comdMalloc<real3>(maxTotalAtoms);
-   atoms->p =        comdMalloc<real3>(maxTotalAtoms);
-   atoms->f =        comdMalloc<real3>(maxTotalAtoms);
-   atoms->U =        comdMalloc<real_t>(maxTotalAtoms);
+   // atoms->r =        comdMalloc<real3>(maxTotalAtoms);
+   // atoms->p =        comdMalloc<real3>(maxTotalAtoms);
+   // atoms->f =        comdMalloc<real3>(maxTotalAtoms);
+   // atoms->U =        comdMalloc<real_t>(maxTotalAtoms);
+   atoms->r = real3_view("r",maxTotalAtoms);
+   atoms->p = real3_view("p",maxTotalAtoms);
+   atoms->f = real3_view("f",maxTotalAtoms);
+   atoms->U = real_t_view("U",maxTotalAtoms);
 
    atoms->nLocal = 0;
    atoms->nGlobal = 0;
@@ -40,10 +44,14 @@ Atoms* initAtoms(LinkCell* boxes)
    {
       atoms->gid[iOff] = 0;
       atoms->iSpecies[iOff] = 0;
-      zeroReal3(atoms->r[iOff]);
-      zeroReal3(atoms->p[iOff]);
-      zeroReal3(atoms->f[iOff]);
-      atoms->U[iOff] = 0.;
+      // zeroReal3(atoms->r[iOff]);
+      // zeroReal3(atoms->p[iOff]);
+      // zeroReal3(atoms->f[iOff]);
+      // atoms->U[iOff] = 0.;
+      zeroReal3(atoms->r, iOff);
+      zeroReal3(atoms->p, iOff);
+      zeroReal3(atoms->f, iOff);
+      atoms->U(iOff) = 0.;
    }
 
    return atoms;
@@ -53,10 +61,10 @@ void destroyAtoms(Atoms *atoms)
 {
    freeMe(atoms,gid);
    freeMe(atoms,iSpecies);
-   freeMe(atoms,r);
-   freeMe(atoms,p);
-   freeMe(atoms,f);
-   freeMe(atoms,U);
+   // freeMe(atoms,r);
+   // freeMe(atoms,p);
+   // freeMe(atoms,f);
+   // freeMe(atoms,U);
    comdFree(atoms);
 }
 
@@ -128,9 +136,12 @@ void setVcm(SimFlat* s, real_t newVcm[3])
          int iSpecies = s->atoms->iSpecies[iOff];
          real_t mass = s->species[iSpecies].mass;
 
-         s->atoms->p[iOff][0] += mass * vShift[0];
-         s->atoms->p[iOff][1] += mass * vShift[1];
-         s->atoms->p[iOff][2] += mass * vShift[2];
+         // s->atoms->p[iOff][0] += mass * vShift[0];
+         // s->atoms->p[iOff][1] += mass * vShift[1];
+         // s->atoms->p[iOff][2] += mass * vShift[2];
+         s->atoms->p(iOff, 0) = s->atoms->p(iOff, 0) + mass * vShift[0];
+         s->atoms->p(iOff, 1) = s->atoms->p(iOff, 1) + mass * vShift[1];
+         s->atoms->p(iOff, 2) = s->atoms->p(iOff, 2) + mass * vShift[2];
       }
    }
 }
@@ -157,9 +168,12 @@ void setTemperature(SimFlat* s, real_t temperature)
          real_t mass = s->species[iType].mass;
          real_t sigma = sqrt(kB_eV * temperature/mass);
          uint64_t seed = mkSeed(s->atoms->gid[iOff], 123);
-         s->atoms->p[iOff][0] = mass * sigma * gasdev(&seed);
-         s->atoms->p[iOff][1] = mass * sigma * gasdev(&seed);
-         s->atoms->p[iOff][2] = mass * sigma * gasdev(&seed);
+         // s->atoms->p[iOff][0] = mass * sigma * gasdev(&seed);
+         // s->atoms->p[iOff][1] = mass * sigma * gasdev(&seed);
+         // s->atoms->p[iOff][2] = mass * sigma * gasdev(&seed);
+         s->atoms->p(iOff, 0) = mass * sigma * gasdev(&seed);
+         s->atoms->p(iOff, 1) = mass * sigma * gasdev(&seed);
+         s->atoms->p(iOff, 2) = mass * sigma * gasdev(&seed);
       }
    }
    // compute the resulting temperature
@@ -176,9 +190,12 @@ void setTemperature(SimFlat* s, real_t temperature)
    {
       for (int iOff=MAXATOMS*iBox, ii=0; ii<s->boxes->nAtoms[iBox]; ++ii, ++iOff)
       {
-         s->atoms->p[iOff][0] *= scaleFactor;
-         s->atoms->p[iOff][1] *= scaleFactor;
-         s->atoms->p[iOff][2] *= scaleFactor;
+         // s->atoms->p[iOff][0] *= scaleFactor;
+         // s->atoms->p[iOff][1] *= scaleFactor;
+         // s->atoms->p[iOff][2] *= scaleFactor;
+         s->atoms->p(iOff, 0) = s->atoms->p(iOff, 0)* scaleFactor;
+         s->atoms->p(iOff, 1) = s->atoms->p(iOff, 1)* scaleFactor;
+         s->atoms->p(iOff, 2) = s->atoms->p(iOff, 2)* scaleFactor;
       }
    }
    kineticEnergy(s);
@@ -197,9 +214,12 @@ void randomDisplacements(SimFlat* s, real_t delta)
       for (int iOff=MAXATOMS*iBox, ii=0; ii<s->boxes->nAtoms[iBox]; ++ii, ++iOff)
       {
          uint64_t seed = mkSeed(s->atoms->gid[iOff], 457);
-         s->atoms->r[iOff][0] += (2.0*lcg61(&seed)-1.0) * delta;
-         s->atoms->r[iOff][1] += (2.0*lcg61(&seed)-1.0) * delta;
-         s->atoms->r[iOff][2] += (2.0*lcg61(&seed)-1.0) * delta;
+         // s->atoms->r[iOff][0] += (2.0*lcg61(&seed)-1.0) * delta;
+         // s->atoms->r[iOff][1] += (2.0*lcg61(&seed)-1.0) * delta;
+         // s->atoms->r[iOff][2] += (2.0*lcg61(&seed)-1.0) * delta;
+         s->atoms->r(iOff, 0) = s->atoms->r(iOff, 0) + (2.0*lcg61(&seed)-1.0) * delta;
+         s->atoms->r(iOff, 1) = s->atoms->r(iOff, 1) + (2.0*lcg61(&seed)-1.0) * delta;
+         s->atoms->r(iOff, 2) = s->atoms->r(iOff, 2) + (2.0*lcg61(&seed)-1.0) * delta;
       }
    }
 }
@@ -220,9 +240,12 @@ void computeVcm(SimFlat* s, real_t vcm[3])
    {
       for (int iOff=MAXATOMS*iBox, ii=0; ii<s->boxes->nAtoms[iBox]; ++ii, ++iOff)
       {
-         v0 += s->atoms->p[iOff][0];
-         v1 += s->atoms->p[iOff][1];
-         v2 += s->atoms->p[iOff][2];
+         // v0 += s->atoms->p[iOff][0];
+         // v1 += s->atoms->p[iOff][1];
+         // v2 += s->atoms->p[iOff][2];
+         v0 += s->atoms->p(iOff, 0);
+         v1 += s->atoms->p(iOff, 1);
+         v2 += s->atoms->p(iOff, 2);
 
          int iSpecies = s->atoms->iSpecies[iOff];
          v3 += s->species[iSpecies].mass;

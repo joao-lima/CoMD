@@ -136,8 +136,10 @@ typedef struct EamPotentialSt
    InterpolationObject* rho;  //!< Electron Density
    InterpolationObject* f;    //!< Embedding Energy
 
-   real_t* rhobar;        //!< per atom storage for rhobar
-   real_t* dfEmbed;       //!< per atom storage for derivative of Embedding
+   // real_t* rhobar;        //!< per atom storage for rhobar
+   // real_t* dfEmbed;       //!< per atom storage for derivative of Embedding
+   real_t_view rhobar;        //!< per atom storage for rhobar
+   real_t_view dfEmbed;       //!< per atom storage for derivative of Embedding
    HaloExchange* forceExchange;
    ForceExchangeData* forceExchangeData;
 } EamPotential;
@@ -186,8 +188,8 @@ BasePotential* initEamPot(const char* dir, const char* file, const char* type)
    // the parallel decomposition and link cells that isn't available
    // with the potential is initialized.  Hence, we defer their
    // initialization until the first time we call the force routine.
-   pot->dfEmbed = NULL;
-   pot->rhobar  = NULL;
+   //pot->dfEmbed = NULL;
+   //pot->rhobar  = NULL;
    pot->forceExchange = NULL;
 
    if (getMyRank() == 0)
@@ -208,14 +210,16 @@ struct zeroAll{
    SimFlat* s;
    EamPotential* pot;
   
-   zeroAll(SimFlat* s_, EamPotential* pot_) : s(s_), pot(pot_) {}
+   zeroAll(SimFlat* s_) : s(s_){
+      pot = (EamPotential*) s->pot;
+   }
 
    KOKKOS_INLINE_FUNCTION
    void operator()(const int& ii) const{
-      zeroReal3(s->atoms->f[ii]);
-      s->atoms->U[ii] = 0.;
-      pot->dfEmbed[ii] = 0.;
-      pot->rhobar[ii] = 0.;
+      zeroReal3(s->atoms->f, ii);
+      s->atoms->U(ii) = 0.;
+      pot->dfEmbed(ii) = 0.;
+      pot->rhobar(ii) = 0.;
    }
 };
 
@@ -252,7 +256,8 @@ struct firstPass{
                real_t r2 = 0.0;
                for (int k=0; k<3; k++)
                {
-                  dr[k]=s->atoms->r[iOff][k]-s->atoms->r[jOff][k];
+                  //dr[k]=s->atoms->r[iOff][k]-s->atoms->r[jOff][k];
+                  dr[k]=s->atoms->r(iOff, k)-s->atoms->r(jOff, k);
                   r2+=dr[k]*dr[k];
                }
 
@@ -266,14 +271,17 @@ struct firstPass{
                   interpolate(pot->rho, r, &rhoTmp, &dRho);
 
                   for (int k=0; k<3; k++)
-                     s->atoms->f[iOff][k] -= dPhi*dr[k]/r;
+                     //s->atoms->f[iOff][k] -= dPhi*dr[k]/r;
+                     s->atoms->f(iOff, k) = s->atoms->f(iOff, k) - dPhi*dr[k]/r;
 
                   // Calculate energy contribution
-                  s->atoms->U[iOff] += 0.5*phiTmp;
+                  //s->atoms->U[iOff] += 0.5*phiTmp;
+                  s->atoms->U(iOff) = s->atoms->U(iOff) + 0.5*phiTmp; 
                   etot += 0.5*phiTmp;
 
                   // accumulate rhobar for each atom
-                  pot->rhobar[iOff] += rhoTmp;
+                  //pot->rhobar[iOff] += rhoTmp;
+                  pot->rhobar(iOff) = pot->rhobar(iOff) + rhoTmp;
                }
 
             } // loop over atoms in jBox
@@ -298,9 +306,12 @@ struct secondPass{
       for (int iOff=MAXATOMS*iBox; iOff<(MAXATOMS*iBox+nIBox); iOff++)
       {
          real_t fEmbed, dfEmbed;
-         interpolate(pot->f, pot->rhobar[iOff], &fEmbed, &dfEmbed);
-         pot->dfEmbed[iOff] = dfEmbed; // save derivative for halo exchange
-         s->atoms->U[iOff] += fEmbed;
+         //interpolate(pot->f, pot->rhobar[iOff], &fEmbed, &dfEmbed);
+         //pot->dfEmbed[iOff] = dfEmbed; // save derivative for halo exchange
+         //s->atoms->U[iOff] += fEmbed;
+         interpolate(pot->f, pot->rhobar(iOff), &fEmbed, &dfEmbed);
+         pot->dfEmbed(iOff) = dfEmbed; // save derivative for halo exchange
+         s->atoms->U(iOff) = s->atoms->U(iOff) + fEmbed;
          etot += fEmbed;
       }
    }
@@ -337,7 +348,8 @@ struct thirdPass{
                real3 dr;
                for (int k=0; k<3; k++)
                {
-                  dr[k]=s->atoms->r[iOff][k]-s->atoms->r[jOff][k];
+                  //dr[k]=s->atoms->r[iOff][k]-s->atoms->r[jOff][k];
+                  dr[k]=s->atoms->r(iOff, k)-s->atoms->r(jOff, k);
                   r2+=dr[k]*dr[k];
                }
 
@@ -350,7 +362,8 @@ struct thirdPass{
                   interpolate(pot->rho, r, &rhoTmp, &dRho);
 
                   for (int k=0; k<3; k++)
-                     s->atoms->f[iOff][k] -= (pot->dfEmbed[iOff]+pot->dfEmbed[jOff])*dRho*dr[k]/r;
+                     //s->atoms->f[iOff][k] -= (pot->dfEmbed[iOff]+pot->dfEmbed[jOff])*dRho*dr[k]/r;
+                     s->atoms->f(iOff, k) -= (pot->dfEmbed(iOff)+pot->dfEmbed(jOff))*dRho*dr[k]/r;
                }
 
             } // loop over atoms in jBox
@@ -379,11 +392,14 @@ int eamForce(SimFlat* s)
    if (pot->forceExchange == NULL)
    {
       int maxTotalAtoms = MAXATOMS*s->boxes->nTotalBoxes;
-      pot->dfEmbed = comdMalloc<real_t>(maxTotalAtoms);
-      pot->rhobar  = comdMalloc<real_t>(maxTotalAtoms);
+      //pot->dfEmbed = comdMalloc<real_t>(maxTotalAtoms);
+      //pot->rhobar  = comdMalloc<real_t>(maxTotalAtoms);
+      pot->dfEmbed = real_t_view("dfEmbed",maxTotalAtoms);
+      pot->rhobar  = real_t_view("rhobar",maxTotalAtoms);
       pot->forceExchange = initForceHaloExchange(s->domain, s->boxes);
       pot->forceExchangeData = comdMalloc<ForceExchangeDataSt>(1);
-      pot->forceExchangeData->dfEmbed = pot->dfEmbed;
+      //pot->forceExchangeData->dfEmbed = pot->dfEmbed;
+      pot->forceExchangeData->dfEmbed = real_t_view(pot->dfEmbed);
       pot->forceExchangeData->boxes = s->boxes;
    }
    
@@ -402,7 +418,11 @@ int eamForce(SimFlat* s)
       pot->rhobar[ii] = 0.;
    }*/
 
-   zeroAll zero_all(s,pot); 
+   //View<real3*> f(s->atoms->f);
+   //View<real_t*> U(s->atoms->U);
+   //View<real_t*> dfEmbed(pot->dfEmbed);
+   //View<real_t*> rhobar(pot->rhobar);
+   zeroAll zero_all(s); 
    Kokkos::parallel_for(fsize, zero_all);
 
    /*int nNbrBoxes = 27;

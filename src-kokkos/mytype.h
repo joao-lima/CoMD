@@ -15,13 +15,20 @@ typedef double real_t; //!< define native type for CoMD as double precision
   #define EMT1 "%le"   //!< \def format argument for eng doubles 
 #endif
 
-typedef real_t real3[3]; //!< a convenience vector with three real_t 
+#include<Kokkos_Core.hpp>
 
-static void zeroReal3(real3 a)
+typedef real_t real3[3]; //!< a convenience vector with three real_t 
+typedef Kokkos::View<real_t*> real_t_view;
+typedef Kokkos::View<real_t*[3]> real3_view;
+
+static void zeroReal3(real3_view a, int ii)
 {
-   a[0] = 0.0;
-   a[1] = 0.0;
-   a[2] = 0.0;
+   // a[0] = 0.0;
+   // a[1] = 0.0;
+   // a[2] = 0.0;
+   a(ii, 0) = 0.0;
+   a(ii, 1) = 0.0;
+   a(ii, 2) = 0.0;
 }
 
 #define screenOut stdout

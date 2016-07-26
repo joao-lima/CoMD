@@ -16,7 +16,7 @@ KOKKOS_ARCH = "SNB"
 
 CXXFLAGS = -O3 -g -fopenmp
 LINK = ${CXX} 
-LINKFLAGS = -g -fpermissive -Wwrite-strings
+LINKFLAGS = -g -fpermissive -Wwrite-strings -Wliteral-suffix
 
 DEPFLAGS = -M
 
