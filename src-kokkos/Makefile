@@ -1,5 +1,6 @@
 KOKKOS_PATH = ${HOME}/kokkos-tutorial/kokkos
-KOKKOS_DEVICES = "OpenMP"
+#KOKKOS_DEVICES = "OpenMP"
+KOKKOS_DEVICES = "Serial"
 EXE_NAME = "CoMD-kokkos"
 
 SRC = $(wildcard *.cpp)
@@ -14,9 +15,9 @@ CXX = g++
 EXE = ${EXE_NAME}.host
 KOKKOS_ARCH = "SNB"
 
-CXXFLAGS = -O3 -g -fopenmp
+CXXFLAGS = -O0 -g  -fpermissive # -fopenmp
 LINK = ${CXX} 
-LINKFLAGS = -g -fpermissive -Wwrite-strings -Wliteral-suffix
+LINKFLAGS = -g -O0 # -fpermissive -Wwrite-strings -Wliteral-suffix
 
 DEPFLAGS = -M
 

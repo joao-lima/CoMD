@@ -64,7 +64,11 @@ void yamlBegin(void)
 void yamlAppInfo(FILE* file)
 {
 
+#if defined(_OPENMP)
    int numThreads = omp_get_max_threads();
+#else
+   int numThreads = 0;
+#endif
 
    if (! printRank())
       return;

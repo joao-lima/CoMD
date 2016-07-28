@@ -15,8 +15,11 @@ struct LinkCellSt;
 /// \see unloadForceBuffer
 typedef struct ForceExchangeDataSt
 {
-   //real_t* dfEmbed; //<! derivative of embedding energy
+#if 1
+   real_t* dfEmbed; //<! derivative of embedding energy
+#else
    real_t_view dfEmbed; //<! derivative of embedding energy
+#endif
    struct LinkCellSt* boxes;
 }ForceExchangeData;
 

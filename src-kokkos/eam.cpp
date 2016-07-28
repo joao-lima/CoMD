@@ -91,7 +91,9 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
+#if defined(_OPENMP)
 #include <omp.h>
+#endif
 
 #include "constants.h"
 #include "memUtils.h"
@@ -136,10 +138,13 @@ typedef struct EamPotentialSt
    InterpolationObject* rho;  //!< Electron Density
    InterpolationObject* f;    //!< Embedding Energy
 
-   // real_t* rhobar;        //!< per atom storage for rhobar
-   // real_t* dfEmbed;       //!< per atom storage for derivative of Embedding
+#if 1
+   real_t* rhobar;        //!< per atom storage for rhobar
+   real_t* dfEmbed;       //!< per atom storage for derivative of Embedding
+#else
    real_t_view rhobar;        //!< per atom storage for rhobar
    real_t_view dfEmbed;       //!< per atom storage for derivative of Embedding
+#endif
    HaloExchange* forceExchange;
    ForceExchangeData* forceExchangeData;
 } EamPotential;
@@ -206,6 +211,7 @@ BasePotential* initEamPot(const char* dir, const char* file, const char* type)
    return (BasePotential*) pot;
 }
 
+#if 0
 struct zeroAll{
    SimFlat* s;
    EamPotential* pot;
@@ -271,17 +277,26 @@ struct firstPass{
                   interpolate(pot->rho, r, &rhoTmp, &dRho);
 
                   for (int k=0; k<3; k++)
-                     //s->atoms->f[iOff][k] -= dPhi*dr[k]/r;
+#if 1
+                     s->atoms->f[iOff][k] -= dPhi*dr[k]/r;
+#else
                      s->atoms->f(iOff, k) = s->atoms->f(iOff, k) - dPhi*dr[k]/r;
+#endif
 
                   // Calculate energy contribution
-                  //s->atoms->U[iOff] += 0.5*phiTmp;
+#if 1
+                  s->atoms->U[iOff] += 0.5*phiTmp;
+#else
                   s->atoms->U(iOff) = s->atoms->U(iOff) + 0.5*phiTmp; 
+#endif
                   etot += 0.5*phiTmp;
 
                   // accumulate rhobar for each atom
-                  //pot->rhobar[iOff] += rhoTmp;
+#if 1
+                  pot->rhobar[iOff] += rhoTmp;
+#else
                   pot->rhobar(iOff) = pot->rhobar(iOff) + rhoTmp;
+#endif
                }
 
             } // loop over atoms in jBox
@@ -306,12 +321,15 @@ struct secondPass{
       for (int iOff=MAXATOMS*iBox; iOff<(MAXATOMS*iBox+nIBox); iOff++)
       {
          real_t fEmbed, dfEmbed;
-         //interpolate(pot->f, pot->rhobar[iOff], &fEmbed, &dfEmbed);
-         //pot->dfEmbed[iOff] = dfEmbed; // save derivative for halo exchange
-         //s->atoms->U[iOff] += fEmbed;
+#if 1
+         interpolate(pot->f, pot->rhobar[iOff], &fEmbed, &dfEmbed);
+         pot->dfEmbed[iOff] = dfEmbed; // save derivative for halo exchange
+         s->atoms->U[iOff] += fEmbed;
+#else
          interpolate(pot->f, pot->rhobar(iOff), &fEmbed, &dfEmbed);
          pot->dfEmbed(iOff) = dfEmbed; // save derivative for halo exchange
          s->atoms->U(iOff) = s->atoms->U(iOff) + fEmbed;
+#endif
          etot += fEmbed;
       }
    }
@@ -348,8 +366,11 @@ struct thirdPass{
                real3 dr;
                for (int k=0; k<3; k++)
                {
-                  //dr[k]=s->atoms->r[iOff][k]-s->atoms->r[jOff][k];
+#if 1
+                  dr[k]=s->atoms->r[iOff][k]-s->atoms->r[jOff][k];
+#else
                   dr[k]=s->atoms->r(iOff, k)-s->atoms->r(jOff, k);
+#endif
                   r2+=dr[k]*dr[k];
                }
 
@@ -362,8 +383,11 @@ struct thirdPass{
                   interpolate(pot->rho, r, &rhoTmp, &dRho);
 
                   for (int k=0; k<3; k++)
-                     //s->atoms->f[iOff][k] -= (pot->dfEmbed[iOff]+pot->dfEmbed[jOff])*dRho*dr[k]/r;
+#if 1
+                     s->atoms->f[iOff][k] -= (pot->dfEmbed[iOff]+pot->dfEmbed[jOff])*dRho*dr[k]/r;
+#else
                      s->atoms->f(iOff, k) -= (pot->dfEmbed(iOff)+pot->dfEmbed(jOff))*dRho*dr[k]/r;
+#endif
                }
 
             } // loop over atoms in jBox
@@ -371,6 +395,8 @@ struct thirdPass{
       } // loop over neighbor boxes
    }
 };
+
+#endif
 
 /// Calculate potential energy and forces for the EAM potential.
 ///
@@ -392,14 +418,20 @@ int eamForce(SimFlat* s)
    if (pot->forceExchange == NULL)
    {
       int maxTotalAtoms = MAXATOMS*s->boxes->nTotalBoxes;
-      //pot->dfEmbed = comdMalloc<real_t>(maxTotalAtoms);
-      //pot->rhobar  = comdMalloc<real_t>(maxTotalAtoms);
+#if 1
+      pot->dfEmbed = comdMalloc<real_t>(maxTotalAtoms);
+      pot->rhobar  = comdMalloc<real_t>(maxTotalAtoms);
+#else
       pot->dfEmbed = real_t_view("dfEmbed",maxTotalAtoms);
       pot->rhobar  = real_t_view("rhobar",maxTotalAtoms);
+#endif
       pot->forceExchange = initForceHaloExchange(s->domain, s->boxes);
       pot->forceExchangeData = comdMalloc<ForceExchangeDataSt>(1);
-      //pot->forceExchangeData->dfEmbed = pot->dfEmbed;
+#if 1
+      pot->forceExchangeData->dfEmbed = pot->dfEmbed;
+#else
       pot->forceExchangeData->dfEmbed = real_t_view(pot->dfEmbed);
+#endif
       pot->forceExchangeData->boxes = s->boxes;
    }
    
@@ -409,23 +441,26 @@ int eamForce(SimFlat* s)
 
    // zero forces / energy / rho /rhoprime
    int fsize = s->boxes->nTotalBoxes*MAXATOMS;
-   /*#pragma omp parallel for
+#if 1
+   #pragma omp parallel for
    for (int ii=0; ii<fsize; ii++)
    {
       zeroReal3(s->atoms->f[ii]);
       s->atoms->U[ii] = 0.;
       pot->dfEmbed[ii] = 0.;
       pot->rhobar[ii] = 0.;
-   }*/
-
+   }
+#else
    //View<real3*> f(s->atoms->f);
    //View<real_t*> U(s->atoms->U);
    //View<real_t*> dfEmbed(pot->dfEmbed);
    //View<real_t*> rhobar(pot->rhobar);
    zeroAll zero_all(s); 
    Kokkos::parallel_for(fsize, zero_all);
+#endif
 
-   /*int nNbrBoxes = 27;
+#if 1
+   int nNbrBoxes = 27;
    // loop over local boxes
    #pragma omp parallel for reduction(+:etot)
    for (int iBox=0; iBox<s->boxes->nLocalBoxes; iBox++)
@@ -479,13 +514,15 @@ int eamForce(SimFlat* s)
          } // loop over atoms in iBox
       } // loop over neighbor boxes
    } // loop over local boxes*/
-
+#else
    firstPass first_pass(s, pot, rCut2);
    Kokkos::parallel_reduce(s->boxes->nLocalBoxes, first_pass, etot);
+#endif
 
    // Compute Embedding Energy
    // loop over all local boxes
-   /*#pragma omp parallel for reduction(+:etot)
+#if 1
+   #pragma omp parallel for reduction(+:etot)
    for (int iBox=0; iBox<s->boxes->nLocalBoxes; iBox++)
    {
       int nIBox =  s->boxes->nAtoms[iBox];
@@ -499,13 +536,14 @@ int eamForce(SimFlat* s)
          s->atoms->U[iOff] += fEmbed;
          etot += fEmbed;
       }
-   }*/
-
+   }
+#else
    secondPass second_pass(s,pot);
    etot_tmp = etot;
    etot = 0;
    Kokkos::parallel_reduce(s->boxes->nLocalBoxes, second_pass, etot);
    etot += etot_tmp;
+#endif
 
    // exchange derivative of the embedding energy with repsect to rhobar
    startTimer(eamHaloTimer);
@@ -514,7 +552,8 @@ int eamForce(SimFlat* s)
 
    // third pass
    // loop over local boxes
-   /*#pragma omp parallel for
+#if 1
+   #pragma omp parallel for
    for (int iBox=0; iBox<s->boxes->nLocalBoxes; iBox++)
    {
       int nIBox = s->boxes->nAtoms[iBox];
@@ -558,9 +597,10 @@ int eamForce(SimFlat* s)
          } // loop over atoms in iBox
       } // loop over neighbor boxes
    } // loop over local boxes*/
-
+#else
    thirdPass third_pass(s, pot, rCut2);
    Kokkos::parallel_for(s->boxes->nLocalBoxes, third_pass);
+#endif
 
    s->ePotential = (real_t) etot;
 
