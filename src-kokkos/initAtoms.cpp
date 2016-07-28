@@ -83,9 +83,9 @@ void destroyAtoms(Atoms *atoms)
 /// Set momenta to zero.
 void createFccLattice(int nx, int ny, int nz, real_t lat, SimFlat* s)
 {
-#if 1
-   const real_t* localMin = s->domain->localMin.x; // alias
-   const real_t* localMax = s->domain->localMax.x; // alias
+#if 0
+   const real3 localMin = s->domain->localMin; // alias
+   const real3 localMax = s->domain->localMax; // alias
 #else
    const real_t* localMin = s->domain->localMin; // alias
    const real_t* localMax = s->domain->localMax; // alias

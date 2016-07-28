@@ -76,7 +76,7 @@
 #define   MAX(A,B) ((A) > (B) ? (A) : (B))
 
 static void copyAtom(LinkCell* boxes, Atoms* atoms, int iAtom, int iBox, int jAtom, int jBox);
-static int getBoxFromCoord(LinkCell* boxes, real_t rr[3]);
+static int getBoxFromCoord(LinkCell* boxes, real3& rr);
 //static int getBoxFromCoordView(LinkCell* boxes, real3_view rr, int ii);
 static void emptyHaloCells(LinkCell* boxes);
 static void getTuple(LinkCell* boxes, int iBox, int* ixp, int* iyp, int* izp);
@@ -172,7 +172,10 @@ void putAtomInBox(LinkCell* boxes, Atoms* atoms,
                   const real_t x,  const real_t y,  const real_t z,
                   const real_t px, const real_t py, const real_t pz)
 {
-   real_t xyz[3] = {x,y,z};
+   real3 xyz; //= {x,y,z};
+   xyz[0] = x;
+   xyz[1] = y;
+   xyz[2] = z;
    
    // Find correct box.
    int iBox = getBoxFromCoord(boxes, xyz);
@@ -306,7 +309,7 @@ void updateLinkCells(LinkCell* boxes, Atoms* atoms)
       while (ii < boxes->nAtoms[iBox])
       {
 #if 1
-         int jBox = getBoxFromCoord(boxes, atoms->r[iOff+ii].x);
+         int jBox = getBoxFromCoord(boxes, atoms->r[iOff+ii]);
 #else
          int jBox = getBoxFromCoordView(boxes, atoms->r, iOff+ii);
 #endif
@@ -344,9 +347,12 @@ void copyAtom(LinkCell* boxes, Atoms* atoms, int iAtom, int iBox, int jAtom, int
    atoms->gid[jOff] = atoms->gid[iOff];
    atoms->iSpecies[jOff] = atoms->iSpecies[iOff];
 #if 1
-   memcpy(atoms->r[jOff].x, atoms->r[iOff].x, sizeof(real3));
-   memcpy(atoms->p[jOff].x, atoms->p[iOff].x, sizeof(real3));
-   memcpy(atoms->f[jOff].x, atoms->f[iOff].x, sizeof(real3));
+//   atoms->r[jOff] = atoms->r[iOff];
+//   atoms->p[jOff] = atoms->p[iOff];
+//   atoms->f[jOff] = atoms->f[iOff];
+   memcpy(atoms->r[jOff], atoms->r[iOff], sizeof(real3));
+   memcpy(atoms->p[jOff], atoms->p[iOff], sizeof(real3));
+   memcpy(atoms->f[jOff], atoms->f[iOff], sizeof(real3));
    memcpy(atoms->U+jOff,  atoms->U+iOff,  sizeof(real_t));
 #else
    for (int i=0; i<3; i++){
@@ -369,10 +375,15 @@ void copyAtom(LinkCell* boxes, Atoms* atoms, int iAtom, int iBox, int jAtom, int
 /// assignments for atoms that are near a link cell boundaries.  If no
 /// ranks claim an atom in a local cell it will be lost.  If multiple
 /// ranks claim an atom it will be duplicated.
-int getBoxFromCoord(LinkCell* boxes, real_t rr[3])
+int getBoxFromCoord(LinkCell* boxes, real3& rr)
 {
-   const real_t* localMin = boxes->localMin.x; // alias
-   const real_t* localMax = boxes->localMax.x; // alias
+#if 0
+   const real3 localMin = boxes->localMin; // alias
+   const real3 localMax = boxes->localMax; // alias
+#else
+   const real_t* localMin = boxes->localMin; // alias
+   const real_t* localMax = boxes->localMax; // alias
+#endif
    const int*    gridSize = boxes->gridSize; // alias
    int ix = (int)(floor((rr[0] - localMin[0])*boxes->invBoxSize[0]));
    int iy = (int)(floor((rr[1] - localMin[1])*boxes->invBoxSize[1]));

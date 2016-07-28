@@ -17,15 +17,15 @@ typedef double real_t; //!< define native type for CoMD as double precision
 
 #include<Kokkos_Core.hpp>
 
-//typedef real_t real3[3]; //!< a convenience vector with three real_t 
-
+typedef real_t real3[3]; //!< a convenience vector with three real_t 
+#if 0
 struct real3 {
   real_t x[3];
 
   real_t& operator[](std::size_t i) { return x[i]; }
   const real_t& operator[](std::size_t i) const { return x[i]; }
 };
-
+#endif
 typedef Kokkos::Serial device_type;
 //typedef Kokkos::OpenMP device_type;
 typedef Kokkos::View<real_t*, device_type> real_t_view;
