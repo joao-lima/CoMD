@@ -154,7 +154,7 @@ int ljForce(SimFlat* s)
    real_t ePot = 0.0;
    s->ePotential = 0.0;
    int fSize = s->boxes->nTotalBoxes*MAXATOMS;
-   #pragma omp taskloop
+   #pragma omp parallel for
    for (int ii=0; ii<fSize; ++ii)
    {
       zeroReal3(s->atoms->f[ii]);
@@ -169,10 +169,15 @@ int ljForce(SimFlat* s)
    int nNbrBoxes = 27;
 
    // loop over local boxes
-   #pragma omp taskloop
+   #pragma omp parallel 
+   {
+#pragma omp master
+	   {
+#pragma omp taskloop shared(ePot)
    for (int iBox=0; iBox<s->boxes->nLocalBoxes; iBox++)
    {
       int nIBox = s->boxes->nAtoms[iBox];
+      real_t th_ePot = 0.0;
    
       // loop over neighbors of iBox
       for (int jTmp=0; jTmp<nNbrBoxes; jTmp++)
@@ -207,8 +212,8 @@ int ljForce(SimFlat* s)
                   real_t r6 = s6 * (r2*r2*r2);
                   real_t eLocal = r6 * (r6 - 1.0) - eShift;
                   s->atoms->U[iOff] += 0.5*eLocal;
-                  #pragma omp atomic
-                  ePot += 0.5*eLocal;
+//#pragma omp atomic
+                  th_ePot += 0.5*eLocal;
 
                   // different formulation to avoid sqrt computation
                   real_t fr = - 4.0*epsilon*r6*r2*(12.0*r6 - 6.0);
@@ -220,8 +225,11 @@ int ljForce(SimFlat* s)
             } // loop over atoms in jBox
          } // loop over atoms in iBox
       } // loop over neighbor boxes
+#pragma omp atomic
+    ePot += th_ePot;
    } // loop over local boxes in system
-
+}
+}
    ePot = ePot*4.0*epsilon;
    s->ePotential = ePot;
 
